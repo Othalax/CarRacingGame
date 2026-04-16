@@ -1,23 +1,13 @@
 #include "Car.h"
 
-Car::Car(std::unordered_map<std::string,sf::Keyboard::Key> keys, sf::Texture& texture, float x, float y, float angle, float length, float max_steering, float max_acceleration)
+Car::Car(std::unordered_map<std::string, sf::Keyboard::Key> keys, sf::Texture& texture, float x, float y, float angle, float length, float max_steering, float max_acceleration)
+    : keys(keys), position(x, y), velocity(0.f, 0.f), angle(angle), length(length),
+    max_acceleration(max_acceleration), max_steering(max_steering), max_velocity(100.f),
+    brake_deceleration(20.f), free_deceleration(40.f), acceleration(0.f), steering(0.f)
 {
-    this->keys = keys;
-    position = sf::Vector2f(x, y);
-    velocity = sf::Vector2f(0.0f, 0.0f);
-    this->angle = angle;
-    this->length = length;
-    this->max_acceleration = max_acceleration;
-    this->max_steering = max_steering;
-    max_velocity = 100.0f;
-    brake_deceleration = 20.0f;
-    free_deceleration = 40.0f;
-    acceleration = 0.0f;
-    steering = 0.0f;
-
     this->car = new sf::Sprite(texture);
-    this->car->setOrigin({100.f, 50.f});
-    this->car->setPosition({x, y});
+    this->car->setOrigin({ 100.f, 50.f });
+    this->car->setPosition({ x, y });
     this->car->rotate(sf::degrees(90));
 }
 
@@ -62,10 +52,6 @@ void Car::veer(const float& dt){
 }
 
 void Car::update(const float& dt) {
-
-    if (car->getScale() != sf::Vector2f(1.f, 1.f)) {
-        car->setScale(sf::Vector2f(1.f, 1.f));
-    }
 
     ride(dt);
     veer(dt);

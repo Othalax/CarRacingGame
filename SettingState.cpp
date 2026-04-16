@@ -41,11 +41,9 @@ void SettingState::initCarTypes()
     ifs.close();
 }
 
-void SettingState::updateButtons()
-{
-    if (this->buttons["menu"]->isPressed())
-    {
-        this->states->push_back(std::make_unique<MenuState>(this->window, supportedKeys, states));
+void SettingState::updateButtons() {
+    if (this->buttons["menu"]->isPressed()) {
+        this->endState();
     }
 
     if (this->buttons["player1arrowright"]->isPressed() && player1car != carTypes[carTypes.size() - 1])
@@ -75,6 +73,7 @@ void SettingState::updateButtons()
         this->player2view->setTexture(textures[player2car]);
         this->buttons["player2arrowleft"]->changeState();
     }
+
 }
 
 void SettingState::update(const float& dt)

@@ -72,13 +72,17 @@ void Game::updateEvents(){
     }
 }
 
-void Game::update(){
+void Game::update() {
     this->updateEvents();
 
-    if(!this->states.empty()){
+    if (!this->states.empty()) {
         this->states.back()->update(this->dt);
+
+        if (this->states.back()->getQuit()) {
+            this->states.pop_back(); 
+        }
     }
-    else{
+    else {
         this->endApp();
         this->window->close();
     }

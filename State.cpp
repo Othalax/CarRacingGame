@@ -3,57 +3,48 @@
 std::string State::player1car = "pinkCar";
 std::string State::player2car = "blueCar";
 
-State::State(sf::RenderWindow* window, std::unordered_map<std::string,sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>* states)
-:states(states)
+State::State(sf::RenderWindow* window, std::unordered_map<std::string, sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>* states)
+    : window(window), supportedKeys(supportedKeys), states(states), quit(false)
 {
-    this->window = window;
-    this->supportedKeys = supportedKeys;
-    initTextures();
+    if (textures.empty()) {
+        this->initTextures();
+    }
 }
 
-State::~State()
-{
-    //dtor
+State::~State() {}
+
+const bool& State::getQuit() const {
+    return this->quit;
 }
 
-void State::initTextures(){
+void State::endState() {
+    this->quit = true;
+}
+
+void State::initTextures() {
     std::ifstream ifs("config/textures.ini");
-    std::string textureName;
-    std::string texturePath;
+    std::string textureName, texturePath;
 
-    if (ifs.is_open())
-    {
-        while (ifs >> textureName >> texturePath)
-        {
+    if (ifs.is_open()) {
+        while (ifs >> textureName >> texturePath) {
             sf::Texture texture;
-            if (!texture.loadFromFile(texturePath))
-            {
-                std::cerr << "Failed to load " << texturePath << std::endl;
+            if (texture.loadFromFile(texturePath)) {
+                textures[textureName] = std::move(texture);
             }
-            textures[textureName] = std::move(texture);
         }
     }
     ifs.close();
 }
 
-void State::endState(){
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)){
-        std::cout<<"StateEnd"<<std::endl;
-    }
-}
-
-void State::updateMousePos(){
-    this->mousePosScreen = sf::Mouse::getPosition();
+void State::updateMousePos() {
     this->mousePosWindow = sf::Mouse::getPosition(*this->window);
     this->mousePosView = this->window->mapPixelToCoords(this->mousePosWindow);
 }
 
-void State::update(const float& dt){
+void State::update(const float& dt) {
 
 }
 
-void State::render(sf::RenderTarget& target){
+void State::render(sf::RenderTarget& target) {
 
 }
-
-
