@@ -1,5 +1,4 @@
-#ifndef GAMESTATE_H
-#define GAMESTATE_H
+#pragma once
 
 #include "State.h"
 
@@ -13,11 +12,8 @@ class GameState : public State
         void update(const float& dt);
         void render(sf::RenderTarget& target);
 
-    protected:
+    private:
         Car* player1;
         Car* player2;
-
-    private:
 };
 
-#endif // GAMESTATE_H

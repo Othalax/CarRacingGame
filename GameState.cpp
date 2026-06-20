@@ -12,7 +12,7 @@ GameState::GameState(sf::RenderWindow* window, std::unordered_map<std::string,sf
     keys.insert({"backward", sf::Keyboard::Key::S});
     keys.insert({"left", sf::Keyboard::Key::A});
     keys.insert({"right", sf::Keyboard::Key::D});
-    player1 = new Car(keys, textures[player1car], 200.f, 200.f, 0.f, 100.f, 30.f, 200.f);
+    player1 = new Car(keys, textures[player1car], 400.f, 200.f, 0.f, 90.f, 30.f, 200.f);
     if(State::player2car == "")
     {
         State::player2car = "blueCar";
@@ -22,7 +22,7 @@ GameState::GameState(sf::RenderWindow* window, std::unordered_map<std::string,sf
     keys2.insert({"backward", sf::Keyboard::Key::Down});
     keys2.insert({"left", sf::Keyboard::Key::Left});
     keys2.insert({"right", sf::Keyboard::Key::Right});
-    player2 = new Car(keys2, textures[player2car], 200.f, 200.f, 0.f, 100.f, 30.f, 200.f);
+    player2 = new Car(keys2, textures[player2car], 200.f, 200.f, 0.f, 90.f, 30.f, 200.f);
 }
 
 GameState::~GameState()
@@ -32,7 +32,9 @@ GameState::~GameState()
 
 void GameState::update(const float& dt){
     this->player1->update(dt);
+	this->player1->handleCollision(*this->player2);
     this->player2->update(dt);
+	this->player2->handleCollision(*this->player1);
 }
 
 void GameState::render(sf::RenderTarget& target){

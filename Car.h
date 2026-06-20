@@ -1,5 +1,4 @@
-#ifndef CAR_H
-#define CAR_H
+#pragma once
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
@@ -18,6 +17,14 @@
 #define PI 3.14159265358979323846
 
 class Car {
+public:
+    Car(std::unordered_map<std::string,sf::Keyboard::Key> keys, sf::Texture& texture, float x, float y, float angle, float length = 100.0f, float max_steering = 30.0f, float max_acceleration = 200.0f);
+    virtual ~Car();
+
+    void handleCollision(Car& other);
+    void update(const float& dt);
+    void render(sf::RenderTarget& target);
+
 private:
     sf::Sprite* car;
     sf::Vector2f rotateVector(const sf::Vector2f& vec, float angle_deg) {
@@ -26,12 +33,6 @@ private:
         float sin_a = std::sin(angle_rad);
         return sf::Vector2f(vec.x * cos_a - vec.y * sin_a, vec.x * sin_a + vec.y * cos_a);
     }
-
-    std::unordered_map<std::string,sf::Keyboard::Key> keys;
-
-public:
-    Car(std::unordered_map<std::string,sf::Keyboard::Key> keys, sf::Texture& texture, float x, float y, float angle, float length = 100.0f, float max_steering = 30.0f, float max_acceleration = 200.0f);
-    virtual ~Car();
 
     sf::Vector2f position;
     sf::Vector2f velocity;
@@ -45,10 +46,11 @@ public:
     float acceleration;
     float steering;
 
+    std::unordered_map<std::string, sf::Keyboard::Key> keys;
+
     void ride(const float& dt);
     void veer(const float& dt);
-    void update(const float& dt);
-    void render(sf::RenderTarget& target);
+    float dotProduct(const sf::Vector2f& a, const sf::Vector2f& b);
+	sf::Vector2f normalizeVector(const sf::Vector2f& v);
 };
 
-#endif // CAR_H

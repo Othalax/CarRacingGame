@@ -8,7 +8,7 @@ Car::Car(std::unordered_map<std::string, sf::Keyboard::Key> keys, sf::Texture& t
     this->car = new sf::Sprite(texture);
     this->car->setOrigin({ 100.f, 50.f });
     this->car->setPosition({ x, y });
-    this->car->rotate(sf::degrees(90));
+    this->car->scale({ 0.5f, 0.5f });
 }
 
 Car::~Car()
@@ -49,6 +49,91 @@ void Car::veer(const float& dt){
     } else {
         steering *= 0.8f;
     }
+}
+
+float Car::dotProduct(const sf::Vector2f& a, const sf::Vector2f& b) {
+    return a.x * b.x + a.y * b.y;
+}
+
+sf::Vector2f Car::normalizeVector(const sf::Vector2f& v) {
+    float length = std::sqrt(v.x * v.x + v.y * v.y);
+    return (length != 0.f) ? v / length : sf::Vector2f(0.f, 0.f);
+}
+
+void Car::handleCollision(Car& other) {
+    sf::FloatRect boundsThis = this->car->getLocalBounds();
+    sf::Transform transThis = this->car->getTransform();
+
+    sf::Vector2f vertsThis[4] = {
+        transThis.transformPoint({boundsThis.position.x, boundsThis.position.y}),
+        transThis.transformPoint({boundsThis.position.x + boundsThis.size.x, boundsThis.position.y}),
+        transThis.transformPoint({boundsThis.position.x + boundsThis.size.x, boundsThis.position.y + boundsThis.size.y}),
+        transThis.transformPoint({boundsThis.position.x, boundsThis.position.y + boundsThis.size.y})
+    };
+
+    sf::FloatRect boundsOther = other.car->getLocalBounds();
+    sf::Transform transOther = other.car->getTransform();
+
+    sf::Vector2f vertsOther[4] = {
+        transOther.transformPoint({boundsOther.position.x, boundsOther.position.y}),
+        transOther.transformPoint({boundsOther.position.x + boundsOther.size.x, boundsOther.position.y}),
+        transOther.transformPoint({boundsOther.position.x + boundsOther.size.x, boundsOther.position.y + boundsOther.size.y}),
+        transOther.transformPoint({boundsOther.position.x, boundsOther.position.y + boundsOther.size.y})
+    };
+
+    sf::Vector2f axes[4];
+    axes[0] = normalizeVector(vertsThis[1] - vertsThis[0]); 
+    axes[1] = sf::Vector2f(-axes[0].y, axes[0].x);        
+
+    axes[2] = normalizeVector(vertsOther[1] - vertsOther[0]); 
+    axes[3] = sf::Vector2f(-axes[2].y, axes[2].x);          
+
+    float minOverlap = std::numeric_limits<float>::max();
+    sf::Vector2f mtvAxis; 
+
+
+    for (int i = 0; i < 4; ++i) {
+        sf::Vector2f axis = axes[i];
+
+
+        float minThis = dotProduct(vertsThis[0], axis);
+        float maxThis = minThis;
+        for (int j = 1; j < 4; ++j) {
+            float proj = dotProduct(vertsThis[j], axis);
+            minThis = std::min(minThis, proj);
+            maxThis = std::max(maxThis, proj);
+        }
+
+        float minOther = dotProduct(vertsOther[0], axis);
+        float maxOther = minOther;
+        for (int j = 1; j < 4; ++j) {
+            float proj = dotProduct(vertsOther[j], axis);
+            minOther = std::min(minOther, proj);
+            maxOther = std::max(maxOther, proj);
+        }
+
+        if (maxThis < minOther || maxOther < minThis) {
+            return; 
+        }
+
+        float overlap = std::min(maxThis, maxOther) - std::max(minThis, minOther);
+        if (overlap < minOverlap) {
+            minOverlap = overlap;
+            mtvAxis = axis; 
+        }
+    }
+
+    sf::Vector2f direction = this->position - other.position;
+    if (dotProduct(direction, mtvAxis) < 0) {
+        mtvAxis = -mtvAxis;
+    }
+
+    sf::Vector2f pushVector = mtvAxis * (minOverlap / 2.f);
+    this->position += pushVector;
+    other.position -= pushVector;
+
+    this->velocity.x *= -0.2f;
+    other.velocity.x *= -0.2f;
 }
 
 void Car::update(const float& dt) {
