@@ -1,5 +1,4 @@
-#ifndef MENUSTATE_H
-#define MENUSTATE_H
+#pragma once
 
 #include "Game.h"
 #include "GameState.h"
@@ -10,20 +9,18 @@ class MenuState
     : public State
 {
     public:
-        MenuState(sf::RenderWindow* window, std::unordered_map<std::string,sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>* states);
-        virtual ~MenuState();
+        MenuState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
+                    sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>& states);
+        virtual ~MenuState() = default;
 
         void updateButtons();
         void update(const float& dt);
         void render(sf::RenderTarget& target);
 
-    protected:
-        Button* gamestate;
-        Button* exit;
-        Button* settings;
-        sf::RectangleShape wiwiwi;
-
     private:
+        Button gamestate;
+        Button exit;
+        Button settings;
+
 };
 
-#endif // MENUSTATE_H

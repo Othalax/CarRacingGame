@@ -1,15 +1,26 @@
-#ifndef STATE_H
-#define STATE_H
+#pragma once
 
 
 #include "Car.h"
 
 class State {
+public:
+    State(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
+            sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>& states);
+    virtual ~State() = default;
+
+	const bool& getQuit() const;
+    void endState();
+    void updateMousePos();
+    virtual void update(const float& dt);
+    virtual void render(sf::RenderTarget& target);
+
 protected:
-    sf::RenderWindow* window;
+    std::unique_ptr<sf::RenderWindow>& window;
     std::unordered_map<std::string, sf::Texture> textures;
+	sf::Font font;
     std::unordered_map<std::string, sf::Keyboard::Key> supportedKeys;
-    std::vector<std::unique_ptr<State>>* states;
+    std::vector<std::unique_ptr<State>>& states;
 
     sf::Vector2i mousePosScreen;
     sf::Vector2i mousePosWindow;
@@ -18,20 +29,8 @@ protected:
     static std::string player1car;
     static std::string player2car;
 
-	bool quit;
+    bool quit;
 
     void initTextures();
-
-public:
-    State(sf::RenderWindow* window, std::unordered_map<std::string,sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>* states);
-    virtual ~State();
-
-	const bool& getQuit() const;
-    void endState();
-    void updateMousePos();
-    virtual void update(const float& dt);
-    virtual void render(sf::RenderTarget& target);
-
+    void initFont();
 };
-
-#endif // STATE_H

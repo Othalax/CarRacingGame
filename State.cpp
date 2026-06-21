@@ -3,15 +3,16 @@
 std::string State::player1car = "pinkCar";
 std::string State::player2car = "blueCar";
 
-State::State(sf::RenderWindow* window, std::unordered_map<std::string, sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>* states)
+State::State(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string, 
+                sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>& states)
     : window(window), supportedKeys(supportedKeys), states(states), quit(false)
 {
     if (textures.empty()) {
         this->initTextures();
     }
-}
 
-State::~State() {}
+	initFont();
+}
 
 const bool& State::getQuit() const {
     return this->quit;
@@ -34,6 +35,13 @@ void State::initTextures() {
         }
     }
     ifs.close();
+}
+
+void State::initFont()
+{
+    if (!this->font.openFromFile("textures/fonts/NicoPaint-Monospaced.ttf")) {
+        std::cout << "Error loading font\n";
+    }
 }
 
 void State::updateMousePos() {

@@ -1,4 +1,5 @@
 #pragma once
+#define _USE_MATH_DEFINES
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
@@ -14,7 +15,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#define PI 3.14159265358979323846
 
 class Car {
 public:
@@ -28,14 +28,14 @@ public:
 private:
     sf::Sprite* car;
     sf::Vector2f rotateVector(const sf::Vector2f& vec, float angle_deg) {
-        float angle_rad = angle_deg * PI / 180.0f;
+        float angle_rad = angle_deg * static_cast<float>(M_PI) / 180.f;
         float cos_a = std::cos(angle_rad);
         float sin_a = std::sin(angle_rad);
         return sf::Vector2f(vec.x * cos_a - vec.y * sin_a, vec.x * sin_a + vec.y * cos_a);
     }
 
     sf::Vector2f position;
-    sf::Vector2f velocity;
+    float speed;
     float angle;
     float length;
     float max_acceleration;

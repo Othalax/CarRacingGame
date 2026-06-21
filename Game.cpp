@@ -8,11 +8,6 @@ Game::Game()
     this->initStates();
 }
 
-Game::~Game()
-{
-    //dtor
-}
-
 void Game::initWindow(){
     std::ifstream ifs("config/window.ini");
     std::string title = "x";
@@ -28,11 +23,11 @@ void Game::initWindow(){
     }
     ifs.close();
 
-    window.reset();
-    window = std::make_unique<sf::RenderWindow>(windowBounds, title);
-    window->setFramerateLimit(framerate);
-    window->setVerticalSyncEnabled(verticalSync);
-    view = window->getDefaultView();
+    this->window.reset();
+    this->window = std::make_unique<sf::RenderWindow>(windowBounds, title);
+    this->window->setFramerateLimit(framerate);
+    this->window->setVerticalSyncEnabled(verticalSync);
+    this->view = this->window->getDefaultView();
 }
 
 void Game::initKeybinds(){
@@ -42,19 +37,14 @@ void Game::initKeybinds(){
 
     if (ifs.is_open()) {
         while (ifs >> keyName >> id) {
-           supportedKeys[keyName] = static_cast<sf::Keyboard::Key>(id);
+           this->supportedKeys[keyName] = static_cast<sf::Keyboard::Key>(id);
         }
     }
     ifs.close();
 }
 
-void Game::endApp(){
-    std::cout<<"GameEndApp"<<std::endl;
-}
-
-void Game::initStates(){
-    states.push_back(std::make_unique<MenuState>(this->window.get(), supportedKeys, &states));
-
+void Game::initStates() {
+    this->states.push_back(std::make_unique<MenuState>(this->window, this->supportedKeys, this->states));
 }
 
 void Game::updateDT(){
@@ -66,8 +56,8 @@ void Game::updateEvents(){
         if (event->is<sf::Event::Closed>())
             this->window->close();
         else if (const auto* resized = event->getIf<sf::Event::Resized>()) {
-            view.setSize({static_cast<float>(resized->size.x), static_cast<float>(resized->size.y)});
-            window->setView(view);
+            this->view.setSize({static_cast<float>(resized->size.x), static_cast<float>(resized->size.y)});
+            this->window->setView(this->view);
         }
     }
 }
@@ -83,7 +73,6 @@ void Game::update() {
         }
     }
     else {
-        this->endApp();
         this->window->close();
     }
 }
