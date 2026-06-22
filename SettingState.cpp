@@ -43,11 +43,16 @@ void SettingState::updateButtons() {
         return;
     }
 
-    auto changeCar = [this](std::string& currentCar, sf::Sprite& view, int direction) {
+    auto changeCar = [this](std::string& currentCar, sf::Sprite& view, int direction, std::string& other) {
         auto it = std::find(this->carTypes.begin(), this->carTypes.end(), currentCar);
+        auto itOther = std::find(this->carTypes.begin(), this->carTypes.end(), other);
         if (it != this->carTypes.end()) {
             int currentIndex = static_cast<int>(std::distance(this->carTypes.begin(), it));
+            int currentIndexOther = static_cast<int>(std::distance(this->carTypes.begin(), itOther));
             int newIndex = currentIndex + direction;
+            if (newIndex == currentIndexOther) {
+                newIndex += direction;
+            }
 
             if (newIndex >= 0 && newIndex < static_cast<int>(this->carTypes.size())) {
                 currentCar = this->carTypes[newIndex];
@@ -65,20 +70,20 @@ void SettingState::updateButtons() {
         };
 
     if (this->buttons.at("player1arrowright").isPressed()) {
-        changeCar(State::player1car, this->player1view, 1);
+        changeCar(State::player1car, this->player1view, 1, State::player2car);
         this->buttons.at("player1arrowright").changeState();
     }
     if (this->buttons.at("player1arrowleft").isPressed()) {
-        changeCar(State::player1car, this->player1view, -1);
+        changeCar(State::player1car, this->player1view, -1, State::player2car);
         this->buttons.at("player1arrowleft").changeState();
     }
 
     if (this->buttons.at("player2arrowright").isPressed()) {
-        changeCar(State::player2car, this->player2view, 1);
+        changeCar(State::player2car, this->player2view, 1, State::player1car);
         this->buttons.at("player2arrowright").changeState();
     }
     if (this->buttons.at("player2arrowleft").isPressed()) {
-        changeCar(State::player2car, this->player2view, -1);
+        changeCar(State::player2car, this->player2view, -1, State::player1car);
         this->buttons.at("player2arrowleft").changeState();
     }
 }

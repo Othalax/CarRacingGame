@@ -1,6 +1,6 @@
 #include "State.h"
 
-std::string State::player1car = "pinkCar";
+std::string State::player1car = "redCar";
 std::string State::player2car = "blueCar";
 
 State::State(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string, 

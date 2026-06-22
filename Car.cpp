@@ -1,6 +1,7 @@
 #include "Car.h"
 
-Car::Car(std::unordered_map<std::string, sf::Keyboard::Key> keys, sf::Texture& texture, float x, float y, float angle, float length, float max_steering, float max_acceleration)
+Car::Car(std::unordered_map<std::string, sf::Keyboard::Key> keys, sf::Texture& texture, float x, float y, 
+           float angle, float length, float max_steering, float max_acceleration)
     : keys(keys), position(x, y), speed(0.f), angle(angle), length(length),
     max_acceleration(max_acceleration), max_steering(max_steering), max_velocity(100.f),
     brake_deceleration(20.f), free_deceleration(40.f), acceleration(0.f), steering(0.f)
