@@ -24,8 +24,13 @@ GameState::GameState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_m
            00.f, 200.f, 0.f, 90.f, 30.f, 200.f
       )
 {
+    this->track.load("config/map1.json", "textures/map1.png");
+
+    this->player1.setPosition(this->track.getPlayer1Spawn()); 
+    this->player2.setPosition(this->track.getPlayer2Spawn());
+
     if (State::player1car.empty()) {
-        State::player1car = "pinkCar";
+        State::player1car = "redCar";
     }
     if (State::player2car.empty()) {
         State::player2car = "blueCar";
@@ -37,9 +42,21 @@ void GameState::update(const float& dt){
 	this->player1.handleCollision(this->player2);
     this->player2.update(dt);
 	this->player2.handleCollision(this->player1);
+
+    for (const auto& wall : this->track.getWalls()) {
+        this->player1.handleWallCollision(wall.vertices);
+        this->player2.handleWallCollision(wall.vertices);
+    }
 }
 
-void GameState::render(sf::RenderTarget& target){
+void GameState::render(sf::RenderTarget& target) {
+    sf::Vector2f logicalSize(640.f, 384.f);
+    sf::View gameView(sf::FloatRect({ 0.f, 0.f }, logicalSize));
+    sf::View originalView = this->window->getView();
+
+    this->window->setView(gameView);
+    this->window->draw(this->track, sf::RenderStates::Default);
+
     this->player1.render(*this->window);
     this->player2.render(*this->window);
 }

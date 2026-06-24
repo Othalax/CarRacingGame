@@ -1,6 +1,7 @@
 #pragma once
 
 #include "State.h"
+#include "Map.h"
 
 
 class GameState : public State
@@ -16,5 +17,7 @@ class GameState : public State
     private:
         Car player1;
         Car player2;
+
+        Map track;
 };
 
