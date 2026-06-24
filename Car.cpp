@@ -7,14 +7,19 @@ Car::Car(std::unordered_map<std::string, sf::Keyboard::Key> keys, sf::Texture& t
     brake_deceleration(20.f), free_deceleration(40.f), acceleration(0.f), steering(0.f)
 {
     this->car = new sf::Sprite(texture);
-    this->car->setOrigin({ 100.f, 50.f });
+    this->car->setOrigin({ 16.f, 8.f });
     this->car->setPosition({ x, y });
-    this->car->scale({ 0.5f, 0.5f });
+    this->car->scale({ 0.125f, 0.125f });
 }
 
 Car::~Car()
 {
     delete this->car;
+}
+
+void Car::setPosition(sf::Vector2f position) {
+	this->position = position;
+    this->car->setPosition(position);
 }
 
 void Car::ride(const float& dt){
@@ -125,7 +130,7 @@ void Car::handleCollision(Car& other) {
     }
 
     sf::Vector2f direction = this->position - other.position;
-    if (dotProduct(direction, mtvAxis) < 0) {
+    if (this->dotProduct(direction, mtvAxis) < 0) {
         mtvAxis = -mtvAxis;
     }
 
@@ -135,6 +140,95 @@ void Car::handleCollision(Car& other) {
 
     this->speed *= -0.2f;
     other.speed *= -0.2f;
+}
+
+void Car::handleWallCollision(const std::vector<sf::Vector2f>& wallVertices) {
+    sf::FloatRect boundsThis = this->car->getLocalBounds();
+    sf::Transform transThis = this->car->getTransform();
+
+    std::vector<sf::Vector2f> vertsThis = {
+        transThis.transformPoint({boundsThis.position.x, boundsThis.position.y}),
+        transThis.transformPoint({boundsThis.position.x + boundsThis.size.x, boundsThis.position.y}),
+        transThis.transformPoint({boundsThis.position.x + boundsThis.size.x, boundsThis.position.y + boundsThis.size.y}),
+        transThis.transformPoint({boundsThis.position.x, boundsThis.position.y + boundsThis.size.y})
+    };
+
+    std::vector<sf::Vector2f> axes;
+
+    for (size_t i = 0; i < 4; ++i) {
+        sf::Vector2f p1 = vertsThis[i];
+        sf::Vector2f p2 = vertsThis[(i + 1) % 4];
+        sf::Vector2f edge = p2 - p1;
+        sf::Vector2f normal(-edge.y, edge.x);
+
+        normal = normalizeVector(normal);
+        axes.push_back(normal);
+    }
+
+    size_t wallCount = wallVertices.size();
+    for (size_t i = 0; i < wallCount; ++i) {
+        sf::Vector2f p1 = wallVertices[i];
+        sf::Vector2f p2 = wallVertices[(i + 1) % wallCount];
+        sf::Vector2f edge = p2 - p1;
+        sf::Vector2f normal(-edge.y, edge.x);
+
+        normal = normalizeVector(normal);
+        axes.push_back(normal);
+    }
+
+    float minOverlap = std::numeric_limits<float>::max();
+    sf::Vector2f mtvAxis(0.f, 0.f);
+
+    for (const auto& axis : axes) {
+        float minThis = dotProduct(vertsThis[0], axis);
+        float maxThis = minThis;
+        for (size_t j = 1; j < 4; ++j) {
+            float proj = dotProduct(vertsThis[j], axis);
+            minThis = std::min(minThis, proj);
+            maxThis = std::max(maxThis, proj);
+        }
+
+        float minWall = dotProduct(wallVertices[0], axis);
+        float maxWall = minWall;
+        for (size_t j = 1; j < wallCount; ++j) {
+            float proj = dotProduct(wallVertices[j], axis);
+            minWall = std::min(minWall, proj);
+            maxWall = std::max(maxWall, proj);
+        }
+
+        if (maxThis < minWall || maxWall < minThis) {
+            return;
+        }
+
+        float overlap = std::min(maxThis, maxWall) - std::max(minThis, minWall);
+        if (overlap < minOverlap) {
+            minOverlap = overlap;
+            mtvAxis = axis;
+        }
+    }
+
+    sf::Vector2f carCenter = this->position; 
+
+    sf::Vector2f closestVertex = wallVertices[0];
+    float minDist = std::numeric_limits<float>::max();
+
+    for (const auto& v : wallVertices) {
+        float dist = std::pow(v.x - carCenter.x, 2) + std::pow(v.y - carCenter.y, 2);
+        if (dist < minDist) {
+            minDist = dist;
+            closestVertex = v;
+        }
+    }
+
+    sf::Vector2f direction = carCenter - closestVertex;
+
+    if (dotProduct(direction, mtvAxis) < 0) {
+        mtvAxis = -mtvAxis;
+    }
+
+    this->position += mtvAxis * minOverlap;
+    this->speed = 0.f;
+
 }
 
 void Car::update(const float& dt) {

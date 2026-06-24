@@ -18,10 +18,14 @@
 
 class Car {
 public:
-    Car(std::unordered_map<std::string,sf::Keyboard::Key> keys, sf::Texture& texture, float x, float y, float angle, float length = 100.0f, float max_steering = 30.0f, float max_acceleration = 200.0f);
+    Car(std::unordered_map<std::string,sf::Keyboard::Key> keys, sf::Texture& texture, 
+        float x, float y, float angle, float length = 100.0f, float max_steering = 30.0f, 
+        float max_acceleration = 200.0f);
     virtual ~Car();
 
+    void setPosition(sf::Vector2f position);
     void handleCollision(Car& other);
+    void handleWallCollision(const std::vector<sf::Vector2f>& wallVertices);
     void update(const float& dt);
     void render(sf::RenderTarget& target);
 
