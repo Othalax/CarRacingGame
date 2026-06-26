@@ -11,7 +11,7 @@ GameState::GameState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_m
               {"right", sf::Keyboard::Key::D}
           },
           textures[State::player1car.empty() ? "pinkCar" : State::player1car],
-          400.f, 200.f, 0.f, 90.f, 30.f, 200.f
+          400.f, 200.f, 0.f, 90.f, 50.f, 200.f
       ),
       player2(
           {
@@ -21,7 +21,7 @@ GameState::GameState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_m
               {"right", sf::Keyboard::Key::Right}
           },
           textures[State::player2car.empty() ? "blueCar" : State::player2car],
-           00.f, 200.f, 0.f, 90.f, 30.f, 200.f
+           00.f, 200.f, 0.f, 90.f, 50.f, 200.f
       )
 {
     this->track.load("config/map1.json", "textures/map1.png");
@@ -54,9 +54,13 @@ void GameState::render(sf::RenderTarget& target) {
     sf::View gameView(sf::FloatRect({ 0.f, 0.f }, logicalSize));
     sf::View originalView = this->window->getView();
 
+    gameView.setViewport(originalView.getViewport());
+
     this->window->setView(gameView);
     this->window->draw(this->track, sf::RenderStates::Default);
 
     this->player1.render(*this->window);
     this->player2.render(*this->window);
+
+    this->window->setView(originalView);
 }

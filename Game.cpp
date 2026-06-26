@@ -51,12 +51,29 @@ void Game::updateDT(){
     this->dt=this->dtClock.restart().asSeconds();
 }
 
-void Game::updateEvents(){
+void Game::updateEvents() {
     while (const std::optional event = this->window->pollEvent()) {
         if (event->is<sf::Event::Closed>())
             this->window->close();
         else if (const auto* resized = event->getIf<sf::Event::Resized>()) {
-            this->view.setSize({static_cast<float>(resized->size.x), static_cast<float>(resized->size.y)});
+            float targetRatio = this->view.getSize().x / this->view.getSize().y;
+            float windowRatio = static_cast<float>(resized->size.x) / static_cast<float>(resized->size.y);
+
+            float sizeX = 1.f;
+            float sizeY = 1.f;
+            float posX = 0.f;
+            float posY = 0.f;
+
+            if (windowRatio > targetRatio) {
+                sizeX = targetRatio / windowRatio;
+                posX = (1.f - sizeX) / 2.f;
+            }
+            else {
+                sizeY = windowRatio / targetRatio;
+                posY = (1.f - sizeY) / 2.f;
+            }
+
+            this->view.setViewport(sf::FloatRect({ posX, posY }, { sizeX, sizeY }));
             this->window->setView(this->view);
         }
     }
