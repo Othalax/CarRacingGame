@@ -3,15 +3,16 @@
 MenuState::MenuState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
                         sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>& states)
     : State(window, supportedKeys, states),
-      gamestate(150.f, 150.f, 150.f, 50.f, "Start", textures["baseButton"], textures["baseButtonClicked"], font),
-      exit(150.f, 250.f, 150.f, 50.f, "Exit", textures["baseButton"], textures["baseButtonClicked"], font),
-      settings(150.f, 350.f, 150.f, 50.f, "Settings", textures["baseButton"], textures["baseButtonClicked"], font)
+        gamestate(245.f, 50.f, 150.f, 50.f, "Start", textures["baseButton"], textures["baseButtonClicked"], font),
+        settings(245.f, 150.f, 150.f, 50.f, "Settings", textures["baseButton"], textures["baseButtonClicked"], font),
+        exit(245.f, 250.f, 150.f, 50.f, "Exit", textures["baseButton"], textures["baseButtonClicked"], font),
+	    background(textures["menuBackground"])
 {
 }
 
 void MenuState::updateButtons()
 {
-    if(this->exit.isPressed())
+    if(this->exit.isPressed() || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
     {
         window->close();
     }
@@ -38,6 +39,8 @@ void MenuState::update(const float& dt)
 
 void MenuState::render(sf::RenderTarget& target)
 {
+    this->window->draw(this->background, sf::RenderStates::Default);
+
     this->gamestate.render(target);
     this->exit.render(target);
     this->settings.render(target);

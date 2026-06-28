@@ -19,8 +19,9 @@ class MenuState
 
     private:
         Button gamestate;
-        Button exit;
         Button settings;
+        Button exit;
 
+		sf::Sprite background;
 };
 
