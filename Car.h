@@ -21,16 +21,17 @@ public:
     Car(std::unordered_map<std::string,sf::Keyboard::Key> keys, sf::Texture& texture, 
         float x, float y, float angle, float length = 100.0f, float max_steering = 30.0f, 
         float max_acceleration = 200.0f);
-    virtual ~Car();
+    virtual ~Car() = default;
 
     void setPosition(sf::Vector2f position);
     void handleCollision(Car& other);
     void handleWallCollision(const std::vector<sf::Vector2f>& wallVertices);
+    bool checkWinning(const std::vector<sf::Vector2f>& finishLine);
     void update(const float& dt);
     void render(sf::RenderTarget& target);
 
 private:
-    sf::Sprite* car;
+    std::unique_ptr<sf::Sprite> car;
     sf::Vector2f rotateVector(const sf::Vector2f& vec, float angle_deg) {
         float angle_rad = angle_deg * static_cast<float>(M_PI) / 180.f;
         float cos_a = std::cos(angle_rad);

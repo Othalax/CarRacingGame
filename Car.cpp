@@ -6,15 +6,10 @@ Car::Car(std::unordered_map<std::string, sf::Keyboard::Key> keys, sf::Texture& t
     max_acceleration(max_acceleration), max_steering(max_steering), max_velocity(100.f),
     brake_deceleration(20.f), free_deceleration(40.f), acceleration(0.f), steering(0.f)
 {
-    this->car = new sf::Sprite(texture);
+    this->car = std::make_unique<sf::Sprite>(texture);
     this->car->setOrigin({ 16.f, 8.f });
     this->car->setPosition({ x, y });
     this->car->scale({ 0.125f, 0.125f });
-}
-
-Car::~Car()
-{
-    delete this->car;
 }
 
 void Car::setPosition(sf::Vector2f position) {
@@ -229,6 +224,51 @@ void Car::handleWallCollision(const std::vector<sf::Vector2f>& wallVertices) {
     this->position += mtvAxis * minOverlap;
     this->speed = 0.f;
 
+}
+
+bool Car::checkWinning(const std::vector<sf::Vector2f>& finishLine)
+{
+    sf::FloatRect boundsThis = this->car->getLocalBounds();
+    sf::Transform transThis = this->car->getTransform();
+
+    sf::Vector2f vertsThis[4] = {
+        transThis.transformPoint({boundsThis.position.x, boundsThis.position.y}),
+        transThis.transformPoint({boundsThis.position.x + boundsThis.size.x, boundsThis.position.y}),
+        transThis.transformPoint({boundsThis.position.x + boundsThis.size.x, boundsThis.position.y + boundsThis.size.y}),
+        transThis.transformPoint({boundsThis.position.x, boundsThis.position.y + boundsThis.size.y})
+    };
+
+    sf::Vector2f axes[4];
+    axes[0] = normalizeVector(vertsThis[1] - vertsThis[0]);
+    axes[1] = sf::Vector2f(-axes[0].y, axes[0].x);
+    axes[2] = normalizeVector(finishLine[1] - finishLine[0]);
+    axes[3] = sf::Vector2f(-axes[2].y, axes[2].x);
+
+    for (int i = 0; i < 4; ++i) {
+        sf::Vector2f axis = axes[i];
+
+        float minThis = dotProduct(vertsThis[0], axis);
+        float maxThis = minThis;
+        for (int j = 1; j < 4; ++j) {
+            float proj = dotProduct(vertsThis[j], axis);
+            minThis = std::min(minThis, proj);
+            maxThis = std::max(maxThis, proj);
+        }
+
+        float minOther = dotProduct(finishLine[0], axis);
+        float maxOther = minOther;
+        for (int j = 1; j < 4; ++j) {
+            float proj = dotProduct(finishLine[j], axis);
+            minOther = std::min(minOther, proj);
+            maxOther = std::max(maxOther, proj);
+        }
+
+        if (maxThis < minOther || maxOther < minThis) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 void Car::update(const float& dt) {

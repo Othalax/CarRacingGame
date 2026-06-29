@@ -95,6 +95,10 @@ void Game::update() {
 }
 
 void Game::render(){
+    sf::Vector2f logicalSize(640.f, 384.f);
+    sf::View view(sf::FloatRect({ 0.f, 0.f }, logicalSize));
+
+    this->window->setView(view);
     this->window->clear();
 
     if(!this->states.empty()){
