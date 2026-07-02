@@ -4,8 +4,8 @@ std::string State::player1car = "redCar";
 std::string State::player2car = "blueCar";
 
 State::State(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string, 
-                sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>& states)
-    : window(window), supportedKeys(supportedKeys), states(states), quit(false)
+                sf::Keyboard::Key> supportedKeys)
+    : window(window), supportedKeys(supportedKeys), quit(false), nextState(nullptr)
 {
     if (textures.empty()) {
         this->initTextures();
@@ -16,6 +16,11 @@ State::State(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::
 
 const bool& State::getQuit() const {
     return this->quit;
+}
+
+std::unique_ptr<State> State::getNextState()
+{
+    return std::move(this->nextState);
 }
 
 void State::endState() {

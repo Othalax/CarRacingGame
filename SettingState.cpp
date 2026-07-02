@@ -1,8 +1,9 @@
 #include "SettingState.h"
+#include "MenuState.h"
 
 SettingState::SettingState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
-                            sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>& states)
-    : State(window, supportedKeys, states),
+                            sf::Keyboard::Key> supportedKeys)
+    : State(window, supportedKeys),
 	player1view(textures[State::player1car]), 
     player2view(textures[State::player2car])
 {
@@ -39,7 +40,7 @@ void SettingState::initCarTypes()
 
 void SettingState::updateButtons() {
     if (this->buttons.at("menu").isPressed()) {
-        this->endState();
+        this->nextState = std::make_unique<MenuState>(this->window, this->supportedKeys);
         return;
     }
 

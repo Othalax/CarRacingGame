@@ -22,7 +22,7 @@ private:
     sf::Clock dtClock;
     float dt;
 
-    std::vector<std::unique_ptr<State>> states;
+    std::unique_ptr<State> currentState;
     std::unordered_map<std::string, sf::Keyboard::Key> supportedKeys;
 
     void initWindow();

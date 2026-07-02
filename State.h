@@ -6,10 +6,11 @@
 class State {
 public:
     State(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
-            sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>& states);
+            sf::Keyboard::Key> supportedKeys);
     virtual ~State() = default;
 
 	const bool& getQuit() const;
+    std::unique_ptr<State> getNextState();
     void endState();
     void updateMousePos();
     virtual void update(const float& dt);
@@ -20,7 +21,6 @@ protected:
     std::unordered_map<std::string, sf::Texture> textures;
 	sf::Font font;
     std::unordered_map<std::string, sf::Keyboard::Key> supportedKeys;
-    std::vector<std::unique_ptr<State>>& states;
 
     sf::Vector2i mousePosScreen;
     sf::Vector2i mousePosWindow;
@@ -30,6 +30,7 @@ protected:
     static std::string player2car;
 
     bool quit;
+    std::unique_ptr<State> nextState;
 
     void initTextures();
     void initFont();

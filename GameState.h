@@ -8,7 +8,7 @@ class GameState : public State
 {
     public:
         GameState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
-                    sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>& states);
+                    sf::Keyboard::Key> supportedKeys);
         virtual ~GameState() = default;
 
         void update(const float& dt);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MenuState.h"
+#include "State.h"
 #include "Button.h"
 
 class SettingState
@@ -8,7 +8,7 @@ class SettingState
 {
     public:
         SettingState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
-                        sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>& states);
+                        sf::Keyboard::Key> supportedKeys);
         virtual ~SettingState() = default;
 
         void updateButtons();

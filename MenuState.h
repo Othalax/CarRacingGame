@@ -1,16 +1,15 @@
 #pragma once
 
 #include "Game.h"
-#include "GameState.h"
+#include "State.h"
 #include "Button.h"
-#include "SettingState.h"
 
 class MenuState
     : public State
 {
     public:
         MenuState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
-                    sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>& states);
+                    sf::Keyboard::Key> supportedKeys);
         virtual ~MenuState() = default;
 
         void updateButtons();

@@ -1,8 +1,9 @@
 #include "GameState.h"
+#include "WinningState.h"
 
 GameState::GameState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string, 
-                        sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>& states)
-    : State(window, supportedKeys, states),
+                        sf::Keyboard::Key> supportedKeys)
+    : State(window, supportedKeys),
       player1(
             {
               {"forward", sf::Keyboard::Key::W},
@@ -43,12 +44,10 @@ void GameState::update(const float& dt){
         this->player2.handleWallCollision(wall.vertices);
     }
     if (this->player1.checkWinning(this->track.getFinishLine().vertices)) {
-        std::cout << "Player 1 wins!" << std::endl;
-        this->endState();
+        this->nextState = std::make_unique<WinningState>(this->window, supportedKeys, '1');
 	}
     if (this->player2.checkWinning(this->track.getFinishLine().vertices)) {
-        std::cout << "Player 2 wins!" << std::endl;
-        this->endState();
+        this->nextState = std::make_unique<WinningState>(this->window, supportedKeys, '2');
     }
 }
 

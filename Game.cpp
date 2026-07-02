@@ -44,7 +44,7 @@ void Game::initKeybinds(){
 }
 
 void Game::initStates() {
-    this->states.push_back(std::make_unique<MenuState>(this->window, this->supportedKeys, this->states));
+    this->currentState = std::make_unique<MenuState>(this->window, this->supportedKeys);
 }
 
 void Game::updateDT(){
@@ -79,18 +79,26 @@ void Game::updateEvents() {
     }
 }
 
-void Game::update() {
-    this->updateEvents();
-
-    if (!this->states.empty()) {
-        this->states.back()->update(this->dt);
-
-        if (this->states.back()->getQuit()) {
-            this->states.pop_back(); 
-        }
-    }
-    else {
+void Game::update()
+{
+    if (this->currentState == nullptr)
+    {
         this->window->close();
+        return;
+    }
+
+    this->currentState->update(this->dt);
+
+    if (this->currentState->getQuit())
+    {
+        this->currentState = nullptr;
+        return;
+    }
+
+    auto next = this->currentState->getNextState();
+    if (next)
+    {
+        this->currentState = std::move(next);
     }
 }
 
@@ -101,8 +109,8 @@ void Game::render(){
     this->window->setView(view);
     this->window->clear();
 
-    if(!this->states.empty()){
-        this->states.back()->render(*this->window);
+    if(this->currentState != nullptr){
+        this->currentState->render(*this->window);
     }
 
     this->window->display();
@@ -112,6 +120,7 @@ void Game::run(){
     while (this->window->isOpen())
     {
         this->updateDT();
+        this->updateEvents();
         this->update();
         this->render();
     }

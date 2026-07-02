@@ -1,8 +1,9 @@
 #include "MenuState.h"
+#include "SettingState.h"
 
 MenuState::MenuState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
-                        sf::Keyboard::Key> supportedKeys, std::vector<std::unique_ptr<State>>& states)
-    : State(window, supportedKeys, states),
+                        sf::Keyboard::Key> supportedKeys)
+    : State(window, supportedKeys),
         gamestate(245.f, 50.f, 150.f, 50.f, "Start", textures["baseButton"], textures["baseButtonClicked"], font),
         settings(245.f, 150.f, 150.f, 50.f, "Settings", textures["baseButton"], textures["baseButtonClicked"], font),
         exit(245.f, 250.f, 150.f, 50.f, "Exit", textures["baseButton"], textures["baseButtonClicked"], font),
@@ -14,17 +15,17 @@ void MenuState::updateButtons()
 {
     if(this->exit.isPressed() || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
     {
-        window->close();
+        this->endState();
     }
 
     if(this->gamestate.isPressed())
     {
-        this->states.push_back(std::make_unique<GameState>(this->window, supportedKeys, states));
+        this->nextState = std::make_unique<GameState>(this->window, supportedKeys);
     }
 
     if(this->settings.isPressed())
     {
-        this->states.push_back(std::make_unique<SettingState>(this->window, supportedKeys, states));
+        this->nextState = std::make_unique<SettingState>(this->window, supportedKeys);
     }
 }
 
