@@ -15,6 +15,8 @@ class SettingState
         void update(const float& dt);
         void render(sf::RenderTarget& target);
     private:
+		sf::Sprite background;
+
         std::unordered_map<std::string, Button> buttons;
         std::vector<std::string> carTypes;
 

@@ -5,22 +5,27 @@ SettingState::SettingState(std::unique_ptr<sf::RenderWindow>& window, std::unord
                             sf::Keyboard::Key> supportedKeys)
     : State(window, supportedKeys),
 	player1view(textures[State::player1car]), 
-    player2view(textures[State::player2car])
+    player2view(textures[State::player2car]),
+	background(textures["settingsBackground"])
 {
     this->initButtons();
     this->initCarTypes();
 
-    player1view.setPosition(sf::Vector2f(200.f, 200.f));
-    player2view.setPosition(sf::Vector2f(400.f, 200.f));
+    this->player1view.setPosition(sf::Vector2f(292.5f, 70.f));
+	this->player1view.setScale(sf::Vector2f(0.5f, 0.5f));
+	this->player1view.rotate(sf::degrees(90.f));
+    this->player2view.setPosition(sf::Vector2f(392.5f, 70.f));
+	this->player2view.setScale(sf::Vector2f(0.5f, 0.5f));
+	this->player2view.rotate(sf::degrees(90.f));
 }
 
 void SettingState::initButtons()
 {
-    this->buttons.try_emplace("menu", 150.f, 150.f, 150.f, 50.f, "Main menu", textures["baseButton"], textures["baseButtonClicked"], font);
-    this->buttons.try_emplace("player1arrowright", 250.f, 400.f, 30.f, 30.f, "", textures["arrowButtonRight"], textures["arrowButtonRightClicked"], font);
-    this->buttons.try_emplace("player1arrowleft", 200.f, 400.f, 30.f, 30.f, "", textures["arrowButtonLeft"], textures["arrowButtonLeftClicked"], font);
-    this->buttons.try_emplace("player2arrowright", 450.f, 400.f, 30.f, 30.f, "", textures["arrowButtonRight"], textures["arrowButtonRightClicked"], font);
-    this->buttons.try_emplace("player2arrowleft", 400.f, 400.f, 30.f, 30.f, "", textures["arrowButtonLeft"], textures["arrowButtonLeftClicked"], font);
+    this->buttons.try_emplace("menu", 282.5f, 30.f, 75.f, 25.f, "Main menu", textures["baseButton"], textures["baseButtonClicked"], font);
+    this->buttons.try_emplace("player1arrowright", 277.5f, 160.f, 30.f, 30.f, "", textures["arrowButtonRight"], textures["arrowButtonRightClicked"], font);
+    this->buttons.try_emplace("player1arrowleft", 232.5f, 160.f, 30.f, 30.f, "", textures["arrowButtonLeft"], textures["arrowButtonLeftClicked"], font);
+    this->buttons.try_emplace("player2arrowright", 377.5f, 160.f, 30.f, 30.f, "", textures["arrowButtonRight"], textures["arrowButtonRightClicked"], font);
+    this->buttons.try_emplace("player2arrowleft", 332.5f, 160.f, 30.f, 30.f, "", textures["arrowButtonLeft"], textures["arrowButtonLeftClicked"], font);
 }
 
 void SettingState::initCarTypes()
@@ -57,16 +62,20 @@ void SettingState::updateButtons() {
 
             if (newIndex >= 0 && newIndex < static_cast<int>(this->carTypes.size())) {
                 currentCar = this->carTypes[newIndex];
-                view.setTexture(this->textures[currentCar]);
             }
             else if (newIndex < 0) {
                 currentCar = this->carTypes.back();
-                view.setTexture(this->textures[currentCar]);
+                if (currentCar == other) {
+                    currentCar = this->carTypes[this->carTypes.size() - 2];
+				}
             }
             else if (newIndex >= static_cast<int>(this->carTypes.size())) {
                 currentCar = this->carTypes.front();
-                view.setTexture(this->textures[currentCar]);
+                if (currentCar == other) {
+                    currentCar = this->carTypes[1];
+                }
 			}
+            view.setTexture(this->textures[currentCar]);
         }
         };
 
@@ -101,6 +110,8 @@ void SettingState::update(const float& dt)
 
 void SettingState::render(sf::RenderTarget& target)
 {
+	target.draw(this->background, sf::RenderStates::Default);
+
     for(auto &itr : this->buttons)
     {
         itr.second.render(target);

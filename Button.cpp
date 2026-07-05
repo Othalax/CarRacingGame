@@ -5,7 +5,7 @@ Button::Button(float x, float y, float width, float height,
                 sf::Texture& hoverTexture, sf::Font& font)
     : defaultTexture(defaultTexture),
     hoverTexture(hoverTexture), isStatePressed(false), 
-	text(font, message, 20), state(0), clicked(false)
+	text(font, message, 10), state(0), clicked(false)
 {
     this->button.setPosition(sf::Vector2f(x, y));
     this->button.setSize(sf::Vector2f(width, height));

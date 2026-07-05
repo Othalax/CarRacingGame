@@ -4,13 +4,13 @@
 WinningState::WinningState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
     sf::Keyboard::Key> supportedKeys, char winner)
     : State(window, supportedKeys),
-    mainMenu(435.f, 150.f, 150.f, 50.f, "Main menu", textures["baseButton"], textures["baseButtonClicked"], font),
-    playAgain(435.f, 250.f, 150.f, 50.f, "Play again", textures["baseButton"], textures["baseButtonClicked"], font),
+    mainMenu(510.f, 250.f, 75.f, 25.f, "Main menu", textures["baseButton"], textures["baseButtonClicked"], font),
+    playAgain(510.f, 300.f, 75.f, 25.f, "Play again", textures["baseButton"], textures["baseButtonClicked"], font),
 	background(textures["winningBackground"]), winningText(font, "Player " + std::string(1, winner) + " wins!", 30),
 	winner(winner)
 {
     winningText.setFillColor(sf::Color::Black);
-	winningText.setPosition(sf::Vector2f(340.f, 50.f));
+	winningText.setPosition(sf::Vector2f(350.f, 50.f));
 }
 
 void WinningState::updateButtons()

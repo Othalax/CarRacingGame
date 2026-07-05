@@ -4,9 +4,9 @@
 MenuState::MenuState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
                         sf::Keyboard::Key> supportedKeys)
     : State(window, supportedKeys),
-        gamestate(245.f, 50.f, 150.f, 50.f, "Start", textures["baseButton"], textures["baseButtonClicked"], font),
-        settings(245.f, 150.f, 150.f, 50.f, "Settings", textures["baseButton"], textures["baseButtonClicked"], font),
-        exit(245.f, 250.f, 150.f, 50.f, "Exit", textures["baseButton"], textures["baseButtonClicked"], font),
+        gamestate(282.5f, 150.f, 75.f, 25.f, "Start", textures["baseButton"], textures["baseButtonClicked"], font),
+        settings(282.5f, 200.f, 75.f, 25.f, "Settings", textures["baseButton"], textures["baseButtonClicked"], font),
+        exit(282.5f, 250.f, 75.f, 25.f, "Exit", textures["baseButton"], textures["baseButtonClicked"], font),
 	    background(textures["menuBackground"])
 {
 }
