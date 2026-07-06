@@ -7,10 +7,54 @@ WinningState::WinningState(std::unique_ptr<sf::RenderWindow>& window, std::unord
     mainMenu(510.f, 250.f, 75.f, 25.f, "Main menu", textures["baseButton"], textures["baseButtonClicked"], font),
     playAgain(510.f, 300.f, 75.f, 25.f, "Play again", textures["baseButton"], textures["baseButtonClicked"], font),
 	background(textures["winningBackground"]), winningText(font, "Player " + std::string(1, winner) + " wins!", 30),
-	winner(winner)
+    scoresText(font, "", 20)
 {
     winningText.setFillColor(sf::Color::Black);
 	winningText.setPosition(sf::Vector2f(350.f, 50.f));
+    scoresText.setFillColor(sf::Color::Black);
+    scoresText.setPosition(sf::Vector2(400.f, 150.f));
+    initScores(winner);
+}
+
+void WinningState::initScores(char winner)
+{
+    std::ifstream ifs("config/scores.ini");
+    int player1score = 0;
+    int player2score = 0;
+
+    if (ifs.is_open()) {
+        ifs >> player1score;
+        ifs >> player2score;
+    }
+    ifs.close();
+
+    if (winner == '1') {
+        player1score += 1;
+    }
+    else if (winner == '2') {
+        player2score += 1;
+    }
+
+    std::string message;
+
+    if (player1score > player2score) {
+        message = "Player 1: " + std::to_string(player1score) + '\n'
+            + "Player 2: " + std::to_string(player2score);
+    }
+    else {
+        message = "Player 2: " + std::to_string(player2score) + '\n'
+            + "Player 1: " + std::to_string(player1score);
+    }
+
+    this->scoresText.setString(message);
+
+    std::ofstream ofs("config/scores.ini");
+
+    ofs.clear();
+    ofs << player1score << '\n';
+    ofs << player2score;
+
+    ofs.close();
 }
 
 void WinningState::updateButtons()
@@ -38,6 +82,7 @@ void WinningState::render(sf::RenderTarget& target)
     this->window->draw(this->background, sf::RenderStates::Default);
 
 	this->window->draw(this->winningText, sf::RenderStates::Default);
+    this->window->draw(this->scoresText, sf::RenderStates::Default);
     this->mainMenu.render(target);
 	this->playAgain.render(target);
 }

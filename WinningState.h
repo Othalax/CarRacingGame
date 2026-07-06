@@ -21,7 +21,9 @@ private:
 
     sf::Sprite background;
 
-	char winner;
     sf::Text winningText;
+    sf::Text scoresText;
+
+    void initScores(char winner);
 };
 

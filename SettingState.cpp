@@ -26,6 +26,7 @@ void SettingState::initButtons()
     this->buttons.try_emplace("player1arrowleft", 232.5f, 160.f, 30.f, 30.f, "", textures["arrowButtonLeft"], textures["arrowButtonLeftClicked"], font);
     this->buttons.try_emplace("player2arrowright", 377.5f, 160.f, 30.f, 30.f, "", textures["arrowButtonRight"], textures["arrowButtonRightClicked"], font);
     this->buttons.try_emplace("player2arrowleft", 332.5f, 160.f, 30.f, 30.f, "", textures["arrowButtonLeft"], textures["arrowButtonLeftClicked"], font);
+    this->buttons.try_emplace("resetScore", 277.5f, 210.f, 85.f, 25.f, "Reset scores", textures["baseButton"], textures["baseButtonClicked"], font);
 }
 
 void SettingState::initCarTypes()
@@ -44,10 +45,6 @@ void SettingState::initCarTypes()
 }
 
 void SettingState::updateButtons() {
-    if (this->buttons.at("menu").isPressed()) {
-        this->nextState = std::make_unique<MenuState>(this->window, this->supportedKeys);
-        return;
-    }
 
     auto changeCar = [this](std::string& currentCar, sf::Sprite& view, int direction, std::string& other) {
         auto it = std::find(this->carTypes.begin(), this->carTypes.end(), currentCar);
@@ -79,20 +76,33 @@ void SettingState::updateButtons() {
         }
         };
 
-    if (this->buttons.at("player1arrowright").isPressed()) {
+    if (this->buttons.at("menu").isPressed()) {
+        this->nextState = std::make_unique<MenuState>(this->window, this->supportedKeys);
+        return;
+    }
+    else if (this->buttons.at("resetScore").isPressed()) {
+        std::ofstream ofs("config/scores.ini");
+
+        ofs.clear();
+        ofs << 0 << '\n';
+        ofs << 0;
+
+        ofs.close();
+    }
+    else if (this->buttons.at("player1arrowright").isPressed()) {
         changeCar(State::player1car, this->player1view, 1, State::player2car);
         this->buttons.at("player1arrowright").changeState();
     }
-    if (this->buttons.at("player1arrowleft").isPressed()) {
+    else if (this->buttons.at("player1arrowleft").isPressed()) {
         changeCar(State::player1car, this->player1view, -1, State::player2car);
         this->buttons.at("player1arrowleft").changeState();
     }
 
-    if (this->buttons.at("player2arrowright").isPressed()) {
+    else if (this->buttons.at("player2arrowright").isPressed()) {
         changeCar(State::player2car, this->player2view, 1, State::player1car);
         this->buttons.at("player2arrowright").changeState();
     }
-    if (this->buttons.at("player2arrowleft").isPressed()) {
+    else if (this->buttons.at("player2arrowleft").isPressed()) {
         changeCar(State::player2car, this->player2view, -1, State::player1car);
         this->buttons.at("player2arrowleft").changeState();
     }
