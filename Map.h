@@ -16,14 +16,12 @@ public:
     bool load(const std::string& jsonPath, const std::string& texturePath);
 
     const std::vector<Wall>& getWalls() const;
-    const Wall& getStartLine() const;
     const Wall& getFinishLine() const;
     const sf::Vector2f& getPlayer1Spawn() const;
     const sf::Vector2f& getPlayer2Spawn() const;
 
 private:
     std::vector<Wall> walls;
-    Wall startLine;
     Wall finishLine;
     sf::Vector2f player1Spawn;
     sf::Vector2f player2Spawn;

@@ -10,14 +10,12 @@ Map::Map() {
 
 bool Map::load(const std::string& jsonPath, const std::string& texturePath) {
     if (!this->backgroundTexture.loadFromFile(texturePath)) {
-        std::cout << "Blad wczytywania tekstury mapy: " << texturePath << "\n";
         return false;
     }
 	this->backgroundSprite = std::make_unique<sf::Sprite>(this->backgroundTexture);
 
     std::ifstream file(jsonPath);
     if (!file.is_open()) {
-        std::cout << "Blad otwarcia pliku JSON mapy: " << jsonPath << "\n";
         return false;
     }
 
@@ -86,6 +84,14 @@ bool Map::load(const std::string& jsonPath, const std::string& texturePath) {
                     if (layerName == "Collision") {
                         this->walls.push_back(tempWall);
                     }
+
+                    else if (layerName == "Logic") {
+                        std::string name = obj.contains("name") ? obj["name"].get<std::string>() : "";
+
+                        if (name == "FinishLine") {
+                            this->finishLine = tempWall;
+                        }
+                    }
                 }
             }
         }
@@ -99,10 +105,6 @@ void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
 const std::vector<Wall>& Map::getWalls() const { 
     return this->walls; 
-}
-
-const Wall& Map::getStartLine() const { 
-    return this->startLine; 
 }
 
 const Wall& Map::getFinishLine() const { 

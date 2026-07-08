@@ -25,12 +25,12 @@ GameState::GameState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_m
            0.f, 0.f, 0.f, 20.f, 30.f, 100.f
       )
 {
-    if (!this->track.load("config/map1.json", "textures/map1.png")) {
+    if (!this->track.load("config/map2.json", "textures/map2.png")) {
         throw std::runtime_error("Failed to load map");
     }
 
-    this->player1.setPosition(this->track.getPlayer1Spawn()); 
-    this->player2.setPosition(this->track.getPlayer2Spawn());
+    this->player1.setPosition(this->track.getPlayer1Spawn(), -90.f); 
+    this->player2.setPosition(this->track.getPlayer2Spawn(), -90.f);
 }
 
 void GameState::update(const float& dt){

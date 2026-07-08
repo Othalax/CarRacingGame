@@ -12,9 +12,9 @@ Car::Car(std::unordered_map<std::string, sf::Keyboard::Key> keys, sf::Texture& t
     this->car->scale({ 0.125f, 0.125f });
 }
 
-void Car::setPosition(sf::Vector2f position) {
+void Car::setPosition(sf::Vector2f position, float angle) {
 	this->position = position;
-    this->car->setPosition(position);
+	this->angle = angle;
 }
 
 void Car::ride(const float& dt){

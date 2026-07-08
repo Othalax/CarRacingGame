@@ -23,7 +23,7 @@ public:
         float max_acceleration = 200.0f);
     virtual ~Car() = default;
 
-    void setPosition(sf::Vector2f position);
+    void setPosition(sf::Vector2f position, float angle);
     void handleCollision(Car& other);
     void handleWallCollision(const std::vector<sf::Vector2f>& wallVertices);
     bool checkWinning(const std::vector<sf::Vector2f>& finishLine);
