@@ -28,10 +28,13 @@ protected:
 
     static std::string player1car;
     static std::string player2car;
+    static std::vector<std::tuple<std::string, std::string, std::string, float>> maps;
+    static int currentMap;
 
     bool quit;
     std::unique_ptr<State> nextState;
 
     void initTextures();
     void initFont();
+    static std::vector<std::tuple<std::string, std::string, std::string, float>> initMaps();
 };

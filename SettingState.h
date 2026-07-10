@@ -22,6 +22,9 @@ class SettingState
 
         sf::Sprite player1view;
         sf::Sprite player2view;
+        
+		sf::Text mapText;
+        sf::Text mapName;
 
         void initButtons();
         void initCarTypes();

@@ -2,6 +2,8 @@
 
 std::string State::player1car = "redCar";
 std::string State::player2car = "blueCar";
+std::vector<std::tuple<std::string, std::string, std::string, float>> State::maps = State::initMaps();
+int State::currentMap = 0;
 
 State::State(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string, 
                 sf::Keyboard::Key> supportedKeys)
@@ -47,6 +49,27 @@ void State::initFont()
     if (!this->font.openFromFile("textures/fonts/NicoPaint-Monospaced.ttf")) {
         std::cout << "Error loading font\n";
     }
+}
+
+std::vector<std::tuple<std::string, std::string, std::string, float>> State::initMaps()
+{
+    std::ifstream ifs("config/maps.ini");
+    std::string mapName;
+    std::string mapTexture;
+    std::string mapConfig;
+    float startingAngle;
+    std::vector<std::tuple<std::string, std::string, std::string, float>> maps;
+
+    if (ifs.is_open())
+    {
+        while (ifs >> mapName >> mapTexture >> mapConfig >> startingAngle)
+        {
+            maps.push_back(std::make_tuple(mapName, mapTexture, mapConfig, startingAngle));
+        }
+    }
+    ifs.close();
+
+    return maps;
 }
 
 void State::updateMousePos() {
