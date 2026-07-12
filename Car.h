@@ -18,9 +18,7 @@
 
 class Car {
 public:
-    Car(std::unordered_map<std::string,sf::Keyboard::Key> keys, sf::Texture& texture, 
-        float x, float y, float angle, float length = 100.0f, float max_steering = 30.0f, 
-        float max_acceleration = 200.0f);
+    Car(std::unordered_map<std::string,sf::Keyboard::Key> keys, sf::Texture& texture);
     virtual ~Car() = default;
 
     void setPosition(sf::Vector2f position, float angle);

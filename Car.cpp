@@ -1,15 +1,23 @@
 #include "Car.h"
+#include "Config.h"
 
-Car::Car(std::unordered_map<std::string, sf::Keyboard::Key> keys, sf::Texture& texture, float x, float y, 
-           float angle, float length, float max_steering, float max_acceleration)
-    : keys(keys), position(x, y), speed(0.f), angle(angle), length(length),
-    max_acceleration(max_acceleration), max_steering(max_steering), max_velocity(100.f),
-    brake_deceleration(20.f), free_deceleration(40.f), acceleration(0.f), steering(0.f)
+Car::Car(std::unordered_map<std::string, sf::Keyboard::Key> keys, sf::Texture& texture)
+    : keys(keys), position(0.f, 0.f), speed(0.f), angle(0.f)
 {
+    const auto& physics = Config::instance().getCarPhysics();
+    this->length = physics.length;
+    this->max_acceleration = physics.maxAcceleration;
+    this->max_steering = physics.maxSteering;
+    this->max_velocity = physics.maxVelocity;
+    this->brake_deceleration = physics.brakeDeceleration;
+    this->free_deceleration = physics.freeDeceleration;
+    this->acceleration = 0.f;
+    this->steering = 0.f;
+
     this->car = std::make_unique<sf::Sprite>(texture);
-    this->car->setOrigin({ 16.f, 8.f });
-    this->car->setPosition({ x, y });
-    this->car->scale({ 0.125f, 0.125f });
+    this->car->setOrigin(physics.spriteOrigin);
+    this->car->setPosition(position);
+    this->car->scale(physics.spriteScale);
 }
 
 void Car::setPosition(sf::Vector2f position, float angle) {
@@ -18,13 +26,15 @@ void Car::setPosition(sf::Vector2f position, float angle) {
 }
 
 void Car::ride(const float& dt){
+    const auto& physics = Config::instance().getCarPhysics();
+
     speed += acceleration * dt;
     speed = std::clamp(speed, -max_velocity, max_velocity);
 
     if (sf::Keyboard::isKeyPressed(keys["forward"])) {
-        acceleration = std::min(acceleration + 50.0f * dt, max_acceleration);
+        acceleration = std::min(acceleration + physics.accelerationRate * dt, max_acceleration);
     } else if (sf::Keyboard::isKeyPressed(keys["backward"])) {
-        acceleration = std::max(acceleration - 50.0f * dt, -max_acceleration);
+        acceleration = std::max(acceleration - physics.accelerationRate * dt, -max_acceleration);
     } else {
         if (std::abs(speed) > dt * free_deceleration)
             acceleration = -std::copysign(free_deceleration, speed);
@@ -34,6 +44,7 @@ void Car::ride(const float& dt){
 }
 
 void Car::veer(const float& dt){
+    const auto& physics = Config::instance().getCarPhysics();
     float angular_velocity = 0.0f;
     if (std::abs(steering) > 0.01f) {
         float turning_radius = length / std::tan(steering * static_cast<float>(M_PI) / 180.0f);
@@ -44,11 +55,11 @@ void Car::veer(const float& dt){
     angle += angular_velocity * dt * (180.0f / static_cast<float>(M_PI));
 
      if (sf::Keyboard::isKeyPressed(keys["left"])) {
-        steering = std::max(steering - 50 * dt, -max_steering);
+        steering = std::max(steering - physics.steeringRate * dt, -max_steering);
     } else if (sf::Keyboard::isKeyPressed(keys["right"])) {
-        steering = std::min(steering + 50 * dt, max_steering);
+        steering = std::min(steering + physics.steeringRate * dt, max_steering);
     } else {
-        steering *= 0.8f;
+        steering *= physics.steeringDamping;
     }
 }
 
@@ -62,6 +73,8 @@ sf::Vector2f Car::normalizeVector(const sf::Vector2f& v) {
 }
 
 void Car::handleCollision(Car& other) {
+    const float collisionSpeedMultiplier = Config::instance().getCarPhysics().collisionSpeedMultiplier;
+
     sf::FloatRect boundsThis = this->car->getLocalBounds();
     sf::Transform transThis = this->car->getTransform();
 
@@ -133,8 +146,8 @@ void Car::handleCollision(Car& other) {
     this->position += pushVector;
     other.position -= pushVector;
 
-    this->speed *= -0.2f;
-    other.speed *= -0.2f;
+    this->speed *= collisionSpeedMultiplier;
+    other.speed *= collisionSpeedMultiplier;
 }
 
 void Car::handleWallCollision(const std::vector<sf::Vector2f>& wallVertices) {

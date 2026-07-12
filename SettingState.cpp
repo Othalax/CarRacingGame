@@ -1,54 +1,59 @@
 #include "SettingState.h"
 #include "MenuState.h"
+#include "Config.h"
 
 SettingState::SettingState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
                             sf::Keyboard::Key> supportedKeys)
     : State(window, supportedKeys),
 	player1view(textures[State::player1car]), 
     player2view(textures[State::player2car]),
-	background(textures["settingsBackground"]),
-    mapText(font, "Map:", 20),
-	mapName(font, std::get<0>(State::maps[State::currentMap]), 10)
+	background(textures[Config::instance().getSettingsBackground()]),
+    mapText(font, Config::instance().getSettingsMapText().text, Config::instance().getSettingsMapText().fontSize),
+	mapName(font, State::maps[State::currentMap].name, Config::instance().getSettingsMapName().fontSize)
 {
     this->initButtons();
-    this->initCarTypes();
 
-    this->player1view.setPosition(sf::Vector2f(292.5f, 70.f));
-	this->player1view.setScale(sf::Vector2f(0.5f, 0.5f));
-	this->player1view.rotate(sf::degrees(90.f));
-    this->player2view.setPosition(sf::Vector2f(392.5f, 70.f));
-	this->player2view.setScale(sf::Vector2f(0.5f, 0.5f));
-	this->player2view.rotate(sf::degrees(90.f));
+    this->carTypes = Config::instance().getCarTypes();
 
-    this->mapText.setPosition(sf::Vector2f((640.f - this->mapText.getLocalBounds().size.x) / 2.f, 250.f));
-	this->mapName.setPosition(sf::Vector2f((640.f - this->mapName.getLocalBounds().size.x) / 2.f, 290.f));
+    const auto player1Layout = Config::instance().getSettingsPlayer1View();
+    const auto player2Layout = Config::instance().getSettingsPlayer2View();
+    const auto mapTextLayout = Config::instance().getSettingsMapText();
+    const auto mapNameLayout = Config::instance().getSettingsMapName();
+    const float logicalWidth = Config::instance().getLogicalSize().x;
+
+    this->player1view.setPosition(sf::Vector2f(player1Layout.x, player1Layout.y));
+	this->player1view.setScale(sf::Vector2f(player1Layout.scale, player1Layout.scale));
+	this->player1view.rotate(sf::degrees(player1Layout.rotation));
+    this->player2view.setPosition(sf::Vector2f(player2Layout.x, player2Layout.y));
+	this->player2view.setScale(sf::Vector2f(player2Layout.scale, player2Layout.scale));
+	this->player2view.rotate(sf::degrees(player2Layout.rotation));
+
+    this->mapText.setPosition(sf::Vector2f((logicalWidth - this->mapText.getLocalBounds().size.x) / 2.f, mapTextLayout.y));
+	this->mapName.setPosition(sf::Vector2f((logicalWidth - this->mapName.getLocalBounds().size.x) / 2.f, mapNameLayout.y));
 }
 
 void SettingState::initButtons()
 {
-    this->buttons.try_emplace("menu", 282.5f, 30.f, 75.f, 25.f, "Main menu", textures["baseButton"], textures["baseButtonClicked"], font);
-    this->buttons.try_emplace("player1arrowright", 277.5f, 160.f, 30.f, 30.f, "", textures["arrowButtonRight"], textures["arrowButtonRightClicked"], font);
-    this->buttons.try_emplace("player1arrowleft", 232.5f, 160.f, 30.f, 30.f, "", textures["arrowButtonLeft"], textures["arrowButtonLeftClicked"], font);
-    this->buttons.try_emplace("player2arrowright", 377.5f, 160.f, 30.f, 30.f, "", textures["arrowButtonRight"], textures["arrowButtonRightClicked"], font);
-    this->buttons.try_emplace("player2arrowleft", 332.5f, 160.f, 30.f, 30.f, "", textures["arrowButtonLeft"], textures["arrowButtonLeftClicked"], font);
-    this->buttons.try_emplace("resetScore", 277.5f, 210.f, 85.f, 25.f, "Reset scores", textures["baseButton"], textures["baseButtonClicked"], font);
-    this->buttons.try_emplace("maparrowright", 377.5f, 280.f, 30.f, 30.f, "", textures["arrowButtonRight"], textures["arrowButtonRightClicked"], font);
-    this->buttons.try_emplace("maparrowleft", 232.5f, 280.f, 30.f, 30.f, "", textures["arrowButtonLeft"], textures["arrowButtonLeftClicked"], font);
-}
+    const auto& config = Config::instance();
 
-void SettingState::initCarTypes()
-{
-    std::ifstream ifs("config/cars.ini");
-    std::string carType;
+    auto addButton = [this, &config](const std::string& name,
+        const std::string& defaultTexture, const std::string& hoverTexture) {
+        const auto layout = config.getSettingsButton(name);
+        this->buttons.try_emplace(
+            name,
+            layout.x, layout.y, layout.width, layout.height, layout.text,
+            textures[defaultTexture], textures[hoverTexture], font
+        );
+    };
 
-    if (ifs.is_open())
-    {
-        while (ifs >> carType)
-        {
-            this->carTypes.push_back(carType);
-        }
-    }
-    ifs.close();
+    addButton("menu", "baseButton", "baseButtonClicked");
+    addButton("player1arrowright", "arrowButtonRight", "arrowButtonRightClicked");
+    addButton("player1arrowleft", "arrowButtonLeft", "arrowButtonLeftClicked");
+    addButton("player2arrowright", "arrowButtonRight", "arrowButtonRightClicked");
+    addButton("player2arrowleft", "arrowButtonLeft", "arrowButtonLeftClicked");
+    addButton("resetScore", "baseButton", "baseButtonClicked");
+    addButton("maparrowright", "arrowButtonRight", "arrowButtonRightClicked");
+    addButton("maparrowleft", "arrowButtonLeft", "arrowButtonLeftClicked");
 }
 
 void SettingState::updateButtons() {
@@ -95,8 +100,10 @@ void SettingState::updateButtons() {
         else if (newIndex >= static_cast<int>(this->maps.size())) {
             State::currentMap = 0;
         }
-		this->mapName.setString(std::get<0>(State::maps[State::currentMap]));
-        this->mapName.setPosition(sf::Vector2f((640.f - this->mapName.getLocalBounds().size.x) / 2.f, 290.f));
+		this->mapName.setString(State::maps[State::currentMap].name);
+        this->mapName.setPosition(sf::Vector2f(
+            (Config::instance().getLogicalSize().x - this->mapName.getLocalBounds().size.x) / 2.f,
+            Config::instance().getSettingsMapName().y));
     };
 
     if (this->buttons.at("menu").isPressed()) {
@@ -104,13 +111,7 @@ void SettingState::updateButtons() {
         return;
     }
     else if (this->buttons.at("resetScore").isPressed()) {
-        std::ofstream ofs("config/scores.ini");
-
-        ofs.clear();
-        ofs << 0 << '\n';
-        ofs << 0;
-
-        ofs.close();
+        Config::instance().resetScores();
     }
     else if (this->buttons.at("player1arrowright").isPressed()) {
         changeCar(State::player1car, this->player1view, 1, State::player2car);

@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Config.h"
 
 
 Game::Game()
@@ -9,38 +10,18 @@ Game::Game()
 }
 
 void Game::initWindow(){
-    std::ifstream ifs("config/window.ini");
-    std::string title = "x";
-    sf::VideoMode windowBounds({800, 600});
-    int framerate = 120;
-    bool verticalSync = false;
-
-    if(ifs.is_open()){
-        ifs >> title;
-        ifs >> windowBounds.size.x >> windowBounds.size.y;
-        ifs >> framerate;
-        ifs >> verticalSync;
-    }
-    ifs.close();
+    const auto& config = Config::instance();
 
     this->window.reset();
-    this->window = std::make_unique<sf::RenderWindow>(windowBounds, title);
-    this->window->setFramerateLimit(framerate);
-    this->window->setVerticalSyncEnabled(verticalSync);
+    this->window = std::make_unique<sf::RenderWindow>(
+        sf::VideoMode(config.getWindowSize()), config.getWindowTitle());
+    this->window->setFramerateLimit(config.getFramerate());
+    this->window->setVerticalSyncEnabled(config.getVerticalSync());
     this->view = this->window->getDefaultView();
 }
 
 void Game::initKeybinds(){
-    std::ifstream ifs("config/supportedKeys.ini");
-    std::string keyName;
-    int id;
-
-    if (ifs.is_open()) {
-        while (ifs >> keyName >> id) {
-           this->supportedKeys[keyName] = static_cast<sf::Keyboard::Key>(id);
-        }
-    }
-    ifs.close();
+    this->supportedKeys = Config::instance().getSupportedKeys();
 }
 
 void Game::initStates() {
@@ -103,7 +84,7 @@ void Game::update()
 }
 
 void Game::render(){
-    sf::Vector2f logicalSize(640.f, 384.f);
+    const auto logicalSize = Config::instance().getLogicalSize();
     sf::View view(sf::FloatRect({ 0.f, 0.f }, logicalSize));
 
     this->window->setView(view);

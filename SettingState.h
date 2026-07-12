@@ -27,5 +27,4 @@ class SettingState
         sf::Text mapName;
 
         void initButtons();
-        void initCarTypes();
 };

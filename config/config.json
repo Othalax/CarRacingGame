@@ -1,0 +1,314 @@
+{
+  "buttonTextSize": 10,
+  "car": {
+    "accelerationRate": 50,
+    "brakeDeceleration": 20,
+    "collisionSpeedMultiplier": -0.2,
+    "freeDeceleration": 40,
+    "length": 20,
+    "maxAcceleration": 100,
+    "maxSteering": 30,
+    "maxVelocity": 100,
+    "spriteOrigin": [
+      16,
+      8
+    ],
+    "spriteScale": [
+      0.125,
+      0.125
+    ],
+    "steeringDamping": 0.8,
+    "steeringRate": 50
+  },
+  "cars": [
+    "yellowCar",
+    "blueCar",
+    "blueStripesCar",
+    "redCar",
+    "redStripesCar",
+    "purpleCar",
+    "purpleStripesCar",
+    "zosiaCar"
+  ],
+  "controls": {
+    "player1": {
+      "backward": "S",
+      "forward": "W",
+      "left": "A",
+      "right": "D"
+    },
+    "player2": {
+      "backward": "Down",
+      "forward": "Up",
+      "left": "Left",
+      "right": "Right"
+    }
+  },
+  "defaults": {
+    "currentMap": 0,
+    "player1Car": "redCar",
+    "player2Car": "blueCar"
+  },
+  "font": {
+    "path": "textures/fonts/NicoPaint-Monospaced.ttf"
+  },
+  "maps": [
+    {
+      "config": "config/map1.json",
+      "name": "Flower road",
+      "startingAngle": 0,
+      "texture": "textures/map1.png"
+    },
+    {
+      "config": "config/map2.json",
+      "name": "Roadworks",
+      "startingAngle": -90,
+      "texture": "textures/map2.png"
+    }
+  ],
+  "menu": {
+    "background": "menuBackground",
+    "buttons": {
+      "exit": {
+        "height": 25,
+        "text": "Exit",
+        "width": 75,
+        "x": 282.5,
+        "y": 250
+      },
+      "settings": {
+        "height": 25,
+        "text": "Settings",
+        "width": 75,
+        "x": 282.5,
+        "y": 200
+      },
+      "start": {
+        "height": 25,
+        "text": "Start",
+        "width": 75,
+        "x": 282.5,
+        "y": 150
+      }
+    }
+  },
+  "render": {
+    "logicalHeight": 384,
+    "logicalWidth": 640
+  },
+  "scores": {
+    "player1": 0,
+    "player2": 0
+  },
+  "settings": {
+    "background": "settingsBackground",
+    "buttons": {
+      "maparrowleft": {
+        "height": 30,
+        "text": "",
+        "width": 30,
+        "x": 232.5,
+        "y": 280
+      },
+      "maparrowright": {
+        "height": 30,
+        "text": "",
+        "width": 30,
+        "x": 377.5,
+        "y": 280
+      },
+      "menu": {
+        "height": 25,
+        "text": "Main menu",
+        "width": 75,
+        "x": 282.5,
+        "y": 30
+      },
+      "player1arrowleft": {
+        "height": 30,
+        "text": "",
+        "width": 30,
+        "x": 232.5,
+        "y": 160
+      },
+      "player1arrowright": {
+        "height": 30,
+        "text": "",
+        "width": 30,
+        "x": 277.5,
+        "y": 160
+      },
+      "player2arrowleft": {
+        "height": 30,
+        "text": "",
+        "width": 30,
+        "x": 332.5,
+        "y": 160
+      },
+      "player2arrowright": {
+        "height": 30,
+        "text": "",
+        "width": 30,
+        "x": 377.5,
+        "y": 160
+      },
+      "resetScore": {
+        "height": 25,
+        "text": "Reset scores",
+        "width": 85,
+        "x": 277.5,
+        "y": 210
+      }
+    },
+    "mapName": {
+      "fontSize": 10,
+      "y": 290
+    },
+    "mapText": {
+      "fontSize": 20,
+      "text": "Map:",
+      "y": 250
+    },
+    "player1View": {
+      "rotation": 90,
+      "scale": 0.5,
+      "x": 292.5,
+      "y": 70
+    },
+    "player2View": {
+      "rotation": 90,
+      "scale": 0.5,
+      "x": 392.5,
+      "y": 70
+    }
+  },
+  "supportedKeys": {
+    "A": 0,
+    "B": 1,
+    "Backslash": 53,
+    "Backspace": 59,
+    "C": 2,
+    "Comma": 49,
+    "D": 3,
+    "Down": 74,
+    "E": 4,
+    "Enter": 58,
+    "Equal": 55,
+    "Escape": 36,
+    "F": 5,
+    "G": 6,
+    "H": 7,
+    "Hyphen": 56,
+    "I": 8,
+    "J": 9,
+    "K": 10,
+    "L": 11,
+    "LAlt": 39,
+    "LBracket": 46,
+    "LControl": 37,
+    "LShift": 38,
+    "Left": 71,
+    "M": 12,
+    "N": 13,
+    "Num0": 26,
+    "Num1": 27,
+    "Num2": 28,
+    "Num3": 29,
+    "Num4": 30,
+    "Num5": 31,
+    "Num6": 32,
+    "Num7": 33,
+    "Num8": 34,
+    "Num9": 35,
+    "Numpad0": 75,
+    "Numpad1": 76,
+    "Numpad2": 77,
+    "Numpad3": 78,
+    "Numpad4": 79,
+    "Numpad5": 80,
+    "Numpad6": 81,
+    "Numpad7": 82,
+    "Numpad8": 83,
+    "Numpad9": 84,
+    "O": 14,
+    "P": 15,
+    "Period": 50,
+    "Q": 16,
+    "Quote": 51,
+    "R": 17,
+    "RAlt": 43,
+    "RBracket": 47,
+    "RControl": 41,
+    "RShift": 42,
+    "Right": 72,
+    "S": 18,
+    "Semicolon": 48,
+    "Slash": 52,
+    "Space": 57,
+    "T": 19,
+    "Tab": 60,
+    "Tilde": 54,
+    "U": 20,
+    "Up": 73,
+    "V": 21,
+    "W": 22,
+    "X": 23,
+    "Y": 24,
+    "Z": 25
+  },
+  "textures": {
+    "arrowButtonLeft": "textures/arrowbuttonleft.png",
+    "arrowButtonLeftClicked": "textures/arrowbuttonleftclicked.png",
+    "arrowButtonRight": "textures/arrowbuttonright.png",
+    "arrowButtonRightClicked": "textures/arrowbuttonrightclicked.png",
+    "baseButton": "textures/basebutton.png",
+    "baseButtonClicked": "textures/basebuttonclicked.png",
+    "blueCar": "textures/bluecar.png",
+    "blueStripesCar": "textures/bluestripescar.png",
+    "menuBackground": "textures/menuBackground.png",
+    "purpleCar": "textures/purplecar.png",
+    "purpleStripesCar": "textures/purplestripescar.png",
+    "redCar": "textures/redcar.png",
+    "redStripesCar": "textures/redstripescar.png",
+    "settingsBackground": "textures/settingsbackground.png",
+    "winningBackground": "textures/winningbackground.png",
+    "yellowCar": "textures/yellowcar.png",
+    "zosiaCar": "textures/zosiacar.png"
+  },
+  "window": {
+    "framerate": 120,
+    "height": 768,
+    "title": "Racing Game",
+    "verticalSync": false,
+    "width": 1280
+  },
+  "winning": {
+    "background": "winningBackground",
+    "buttons": {
+      "mainMenu": {
+        "height": 25,
+        "text": "Main menu",
+        "width": 75,
+        "x": 510,
+        "y": 250
+      },
+      "playAgain": {
+        "height": 25,
+        "text": "Play again",
+        "width": 75,
+        "x": 510,
+        "y": 300
+      }
+    },
+    "scoresText": {
+      "fontSize": 20,
+      "x": 400,
+      "y": 150
+    },
+    "winningText": {
+      "fontSize": 30,
+      "x": 350,
+      "y": 50
+    }
+  }
+}

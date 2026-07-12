@@ -1,32 +1,43 @@
 #include "WinningState.h"
 #include "MenuState.h"
+#include "Config.h"
 
 WinningState::WinningState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
     sf::Keyboard::Key> supportedKeys, char winner)
     : State(window, supportedKeys),
-    mainMenu(510.f, 250.f, 75.f, 25.f, "Main menu", textures["baseButton"], textures["baseButtonClicked"], font),
-    playAgain(510.f, 300.f, 75.f, 25.f, "Play again", textures["baseButton"], textures["baseButtonClicked"], font),
-	background(textures["winningBackground"]), winningText(font, "Player " + std::string(1, winner) + " wins!", 30),
-    scoresText(font, "", 20)
+    mainMenu(
+        Config::instance().getWinningButton("mainMenu").x,
+        Config::instance().getWinningButton("mainMenu").y,
+        Config::instance().getWinningButton("mainMenu").width,
+        Config::instance().getWinningButton("mainMenu").height,
+        Config::instance().getWinningButton("mainMenu").text,
+        textures["baseButton"], textures["baseButtonClicked"], font),
+    playAgain(
+        Config::instance().getWinningButton("playAgain").x,
+        Config::instance().getWinningButton("playAgain").y,
+        Config::instance().getWinningButton("playAgain").width,
+        Config::instance().getWinningButton("playAgain").height,
+        Config::instance().getWinningButton("playAgain").text,
+        textures["baseButton"], textures["baseButtonClicked"], font),
+	background(textures[Config::instance().getWinningBackground()]),
+    winningText(font, "Player " + std::string(1, winner) + " wins!", Config::instance().getWinningText().fontSize),
+    scoresText(font, "", Config::instance().getWinningScoresText().fontSize)
 {
+    const auto winningTextLayout = Config::instance().getWinningText();
+    const auto scoresTextLayout = Config::instance().getWinningScoresText();
+
     winningText.setFillColor(sf::Color::Black);
-	winningText.setPosition(sf::Vector2f(350.f, 50.f));
+	winningText.setPosition(sf::Vector2f(winningTextLayout.x, winningTextLayout.y));
     scoresText.setFillColor(sf::Color::Black);
-    scoresText.setPosition(sf::Vector2(400.f, 150.f));
+    scoresText.setPosition(sf::Vector2f(scoresTextLayout.x, scoresTextLayout.y));
     initScores(winner);
 }
 
 void WinningState::initScores(char winner)
 {
-    std::ifstream ifs("config/scores.ini");
-    int player1score = 0;
-    int player2score = 0;
-
-    if (ifs.is_open()) {
-        ifs >> player1score;
-        ifs >> player2score;
-    }
-    ifs.close();
+    auto& config = Config::instance();
+    int player1score = config.getPlayer1Score();
+    int player2score = config.getPlayer2Score();
 
     if (winner == '1') {
         player1score += 1;
@@ -47,14 +58,7 @@ void WinningState::initScores(char winner)
     }
 
     this->scoresText.setString(message);
-
-    std::ofstream ofs("config/scores.ini");
-
-    ofs.clear();
-    ofs << player1score << '\n';
-    ofs << player2score;
-
-    ofs.close();
+    config.setScores(player1score, player2score);
 }
 
 void WinningState::updateButtons()

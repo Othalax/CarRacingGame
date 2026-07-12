@@ -1,9 +1,10 @@
 #include "State.h"
+#include "Config.h"
 
-std::string State::player1car = "redCar";
-std::string State::player2car = "blueCar";
-std::vector<std::tuple<std::string, std::string, std::string, float>> State::maps = State::initMaps();
-int State::currentMap = 0;
+std::string State::player1car = Config::instance().getDefaultPlayer1Car();
+std::string State::player2car = Config::instance().getDefaultPlayer2Car();
+std::vector<MapEntry> State::maps = Config::instance().getMaps();
+int State::currentMap = Config::instance().getDefaultCurrentMap();
 
 State::State(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string, 
                 sf::Keyboard::Key> supportedKeys)
@@ -30,46 +31,21 @@ void State::endState() {
 }
 
 void State::initTextures() {
-    std::ifstream ifs("config/textures.ini");
-    std::string textureName, texturePath;
+    const auto& texturePaths = Config::instance().getTexturePaths();
 
-    if (ifs.is_open()) {
-        while (ifs >> textureName >> texturePath) {
-            sf::Texture texture;
-            if (texture.loadFromFile(texturePath)) {
-                textures[textureName] = std::move(texture);
-            }
+    for (const auto& [textureName, texturePath] : texturePaths) {
+        sf::Texture texture;
+        if (texture.loadFromFile(texturePath)) {
+            textures[textureName] = std::move(texture);
         }
     }
-    ifs.close();
 }
 
 void State::initFont()
 {
-    if (!this->font.openFromFile("textures/fonts/NicoPaint-Monospaced.ttf")) {
+    if (!this->font.openFromFile(Config::instance().getFontPath())) {
         std::cout << "Error loading font\n";
     }
-}
-
-std::vector<std::tuple<std::string, std::string, std::string, float>> State::initMaps()
-{
-    std::ifstream ifs("config/maps.ini");
-    std::string mapName;
-    std::string mapTexture;
-    std::string mapConfig;
-    float startingAngle;
-    std::vector<std::tuple<std::string, std::string, std::string, float>> maps;
-
-    if (ifs.is_open())
-    {
-        while (ifs >> mapName >> mapTexture >> mapConfig >> startingAngle)
-        {
-            maps.push_back(std::make_tuple(mapName, mapTexture, mapConfig, startingAngle));
-        }
-    }
-    ifs.close();
-
-    return maps;
 }
 
 void State::updateMousePos() {

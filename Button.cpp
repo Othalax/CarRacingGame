@@ -1,11 +1,12 @@
 #include "Button.h"
+#include "Config.h"
 
 Button::Button(float x, float y, float width, float height, 
                std::string message, sf::Texture& defaultTexture, 
                 sf::Texture& hoverTexture, sf::Font& font)
     : defaultTexture(defaultTexture),
     hoverTexture(hoverTexture), isStatePressed(false), 
-	text(font, message, 10), state(0), clicked(false)
+	text(font, message, Config::instance().getButtonTextSize()), state(0), clicked(false)
 {
     this->button.setPosition(sf::Vector2f(x, y));
     this->button.setSize(sf::Vector2f(width, height));

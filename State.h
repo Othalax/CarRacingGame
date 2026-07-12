@@ -1,7 +1,7 @@
 #pragma once
 
-
 #include "Car.h"
+#include "Config.h"
 
 class State {
 public:
@@ -28,7 +28,7 @@ protected:
 
     static std::string player1car;
     static std::string player2car;
-    static std::vector<std::tuple<std::string, std::string, std::string, float>> maps;
+    static std::vector<MapEntry> maps;
     static int currentMap;
 
     bool quit;
@@ -36,5 +36,4 @@ protected:
 
     void initTextures();
     void initFont();
-    static std::vector<std::tuple<std::string, std::string, std::string, float>> initMaps();
 };

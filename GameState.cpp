@@ -1,36 +1,26 @@
 #include "GameState.h"
 #include "WinningState.h"
+#include "Config.h"
 
 GameState::GameState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string, 
                         sf::Keyboard::Key> supportedKeys)
     : State(window, supportedKeys),
       player1(
-            {
-              {"forward", sf::Keyboard::Key::W},
-              {"backward", sf::Keyboard::Key::S},
-              {"left", sf::Keyboard::Key::A},               
-              {"right", sf::Keyboard::Key::D}
-          },
-          textures[State::player1car.empty() ? "redCar" : State::player1car],
-          0.f, 0.f, 0.f, 20.f, 30.f, 100.f
+          Config::instance().getPlayerControls("player1"),
+          textures[State::player1car.empty() ? Config::instance().getDefaultPlayer1Car() : State::player1car]
       ),
       player2(
-          {
-              {"forward", sf::Keyboard::Key::Up},
-              {"backward", sf::Keyboard::Key::Down},
-              {"left", sf::Keyboard::Key::Left},
-              {"right", sf::Keyboard::Key::Right}
-          },
-          textures[State::player2car.empty() ? "blueCar" : State::player2car],
-           0.f, 0.f, 0.f, 20.f, 30.f, 100.f
+          Config::instance().getPlayerControls("player2"),
+          textures[State::player2car.empty() ? Config::instance().getDefaultPlayer2Car() : State::player2car]
       )
 {
-    if (!this->track.load(std::get<2>(State::maps[State::currentMap]), std::get<1>(State::maps[State::currentMap]))) {
+    const auto& currentMap = State::maps[State::currentMap];
+    if (!this->track.load(currentMap.configPath, currentMap.texture)) {
         throw std::runtime_error("Failed to load map");
     }
 
-    this->player1.setPosition(this->track.getPlayer1Spawn(), std::get<3>(State::maps[State::currentMap]));
-    this->player2.setPosition(this->track.getPlayer2Spawn(), std::get<3>(State::maps[State::currentMap]));
+    this->player1.setPosition(this->track.getPlayer1Spawn(), currentMap.startingAngle);
+    this->player2.setPosition(this->track.getPlayer2Spawn(), currentMap.startingAngle);
 }
 
 void GameState::update(const float& dt){
