@@ -308,19 +308,19 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"..\/textures\/road.tsx"
+         "source":"..\/textures\/tilesets\/road.tsx"
         }, 
         {
          "firstgid":41,
-         "source":"..\/textures\/pavement.tsx"
+         "source":"..\/textures\/tilesets\/pavement.tsx"
         }, 
         {
          "firstgid":61,
-         "source":"..\/textures\/grass.tsx"
+         "source":"..\/textures\/tilesets\/grass.tsx"
         }, 
         {
          "firstgid":81,
-         "source":"..\/textures\/flowers.tsx"
+         "source":"..\/textures\/tilesets\/flowers.tsx"
         }],
  "tilewidth":32,
  "type":"map",

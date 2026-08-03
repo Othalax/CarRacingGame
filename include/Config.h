@@ -1,6 +1,6 @@
 #pragma once
 
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <string>

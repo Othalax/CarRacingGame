@@ -45,7 +45,7 @@
     }
   },
   "defaults": {
-    "currentMap": 0,
+    "currentMap": 1,
     "player1Car": "redCar",
     "player2Car": "blueCar"
   },
@@ -57,13 +57,13 @@
       "config": "config/map1.json",
       "name": "Flower road",
       "startingAngle": 0,
-      "texture": "textures/map1.png"
+      "texture": "textures/maps/map1.png"
     },
     {
       "config": "config/map2.json",
       "name": "Roadworks",
       "startingAngle": -90,
-      "texture": "textures/map2.png"
+      "texture": "textures/maps/map2.png"
     }
   ],
   "menu": {
@@ -257,23 +257,23 @@
     "Z": 25
   },
   "textures": {
-    "arrowButtonLeft": "textures/arrowbuttonleft.png",
-    "arrowButtonLeftClicked": "textures/arrowbuttonleftclicked.png",
-    "arrowButtonRight": "textures/arrowbuttonright.png",
-    "arrowButtonRightClicked": "textures/arrowbuttonrightclicked.png",
-    "baseButton": "textures/basebutton.png",
-    "baseButtonClicked": "textures/basebuttonclicked.png",
-    "blueCar": "textures/bluecar.png",
-    "blueStripesCar": "textures/bluestripescar.png",
-    "menuBackground": "textures/menuBackground.png",
-    "purpleCar": "textures/purplecar.png",
-    "purpleStripesCar": "textures/purplestripescar.png",
-    "redCar": "textures/redcar.png",
-    "redStripesCar": "textures/redstripescar.png",
-    "settingsBackground": "textures/settingsbackground.png",
-    "winningBackground": "textures/winningbackground.png",
-    "yellowCar": "textures/yellowcar.png",
-    "zosiaCar": "textures/zosiacar.png"
+    "arrowButtonLeft": "textures/ui/buttons/arrowbuttonleft.png",
+    "arrowButtonLeftClicked": "textures/ui/buttons/arrowbuttonleftclicked.png",
+    "arrowButtonRight": "textures/ui/buttons/arrowbuttonright.png",
+    "arrowButtonRightClicked": "textures/ui/buttons/arrowbuttonrightclicked.png",
+    "baseButton": "textures/ui/buttons/basebutton.png",
+    "baseButtonClicked": "textures/ui/buttons/basebuttonclicked.png",
+    "blueCar": "textures/cars/bluecar.png",
+    "blueStripesCar": "textures/cars/bluestripescar.png",
+    "menuBackground": "textures/ui/backgrounds/menuBackground.png",
+    "purpleCar": "textures/cars/purplecar.png",
+    "purpleStripesCar": "textures/cars/purplestripescar.png",
+    "redCar": "textures/cars/redcar.png",
+    "redStripesCar": "textures/cars/redstripescar.png",
+    "settingsBackground": "textures/ui/backgrounds/settingsbackground.png",
+    "winningBackground": "textures/ui/backgrounds/winningbackground.png",
+    "yellowCar": "textures/cars/yellowcar.png",
+    "zosiaCar": "textures/cars/zosiacar.png"
   },
   "window": {
     "framerate": 120,

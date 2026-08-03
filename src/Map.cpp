@@ -1,7 +1,7 @@
 #include "Map.h"
 #include <fstream>
 #include <iostream>
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 
 Map::Map() {
     this->player1Spawn = { 100.f, 100.f };
