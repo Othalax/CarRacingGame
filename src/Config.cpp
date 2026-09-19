@@ -1,7 +1,8 @@
 #include "Config.h"
-#include <nlohmann/json.hpp>
+
 #include <fstream>
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <stdexcept>
 
 Config& Config::instance() {
@@ -22,63 +23,57 @@ void Config::load() {
     file >> data;
     file.close();
 
-    parseTexturePaths();
-    parseCarTypes();
-    parseMaps();
-    parseSupportedKeys();
-    parseCarPhysics();
+    parse_texture_paths();
+    parse_car_types();
+    parse_maps();
+    parse_supported_keys();
+    parse_car_physics();
 }
 
-void Config::parseTexturePaths() {
+void Config::parse_texture_paths() {
     texturePaths.clear();
-    for (auto& [name, path] : data["textures"].items()) {
+    for (const auto& [name, path] : data.at("textures").items()) {
         texturePaths[name] = path.get<std::string>();
     }
 }
 
-void Config::parseCarTypes() {
-    carTypes = data["cars"].get<std::vector<std::string>>();
+void Config::parse_car_types() {
+    carTypes = data.at("cars").get<std::vector<std::string>>();
 }
 
-void Config::parseMaps() {
+void Config::parse_maps() {
     maps.clear();
-    for (const auto& map : data["maps"]) {
-        maps.push_back({
-            map["name"].get<std::string>(),
-            map["texture"].get<std::string>(),
-            map["config"].get<std::string>(),
-            map["startingAngle"].get<float>()
-        });
+    for (const auto& map : data.at("maps")) {
+        maps.push_back({.name = map.at("name").get<std::string>(),
+                        .texture = map.at("texture").get<std::string>(),
+                        .configPath = map.at("config").get<std::string>(),
+                        .startingAngle = map.at("startingAngle").get<float>()});
     }
 }
 
-void Config::parseSupportedKeys() {
+void Config::parse_supported_keys() {
     supportedKeys.clear();
-    for (auto& [keyName, id] : data["supportedKeys"].items()) {
+    for (const auto& [keyName, id] : data.at("supportedKeys").items()) {
         supportedKeys[keyName] = static_cast<sf::Keyboard::Key>(id.get<int>());
     }
 }
 
-void Config::parseCarPhysics() {
-    const auto& car = data["car"];
-    carPhysics.length = car["length"].get<float>();
-    carPhysics.maxSteering = car["maxSteering"].get<float>();
-    carPhysics.maxAcceleration = car["maxAcceleration"].get<float>();
-    carPhysics.maxVelocity = car["maxVelocity"].get<float>();
-    carPhysics.brakeDeceleration = car["brakeDeceleration"].get<float>();
-    carPhysics.freeDeceleration = car["freeDeceleration"].get<float>();
-    carPhysics.spriteOrigin = {
-        car["spriteOrigin"][0].get<float>(),
-        car["spriteOrigin"][1].get<float>()
-    };
-    carPhysics.spriteScale = {
-        car["spriteScale"][0].get<float>(),
-        car["spriteScale"][1].get<float>()
-    };
-    carPhysics.accelerationRate = car["accelerationRate"].get<float>();
-    carPhysics.steeringRate = car["steeringRate"].get<float>();
-    carPhysics.steeringDamping = car["steeringDamping"].get<float>();
-    carPhysics.collisionSpeedMultiplier = car["collisionSpeedMultiplier"].get<float>();
+void Config::parse_car_physics() {
+    const auto& car = data.at("car");
+    carPhysics.length = car.at("length").get<float>();
+    carPhysics.maxSteering = car.at("maxSteering").get<float>();
+    carPhysics.maxAcceleration = car.at("maxAcceleration").get<float>();
+    carPhysics.maxVelocity = car.at("maxVelocity").get<float>();
+    carPhysics.brakeDeceleration = car.at("brakeDeceleration").get<float>();
+    carPhysics.freeDeceleration = car.at("freeDeceleration").get<float>();
+    carPhysics.spriteOrigin = {car.at("spriteOrigin").at(0).get<float>(),
+                               car.at("spriteOrigin").at(1).get<float>()};
+    carPhysics.spriteScale = {car.at("spriteScale").at(0).get<float>(),
+                              car.at("spriteScale").at(1).get<float>()};
+    carPhysics.accelerationRate = car.at("accelerationRate").get<float>();
+    carPhysics.steeringRate = car.at("steeringRate").get<float>();
+    carPhysics.steeringDamping = car.at("steeringDamping").get<float>();
+    carPhysics.collisionSpeedMultiplier = car.at("collisionSpeedMultiplier").get<float>();
 }
 
 void Config::save() {
@@ -92,87 +87,86 @@ void Config::save() {
     file.close();
 }
 
-const std::string& Config::getWindowTitle() const {
-    return data["window"]["title"].get_ref<const std::string&>();
+[[nodiscard]] const std::string& Config::get_window_title() const {
+    return data.at("window").at("title").get_ref<const std::string&>();
 }
 
-sf::Vector2u Config::getWindowSize() const {
-    return {
-        data["window"]["width"].get<unsigned int>(),
-        data["window"]["height"].get<unsigned int>()
-    };
+[[nodiscard]] sf::Vector2u Config::get_window_size() const {
+    return {data.at("window").at("width").get<unsigned int>(),
+            data.at("window").at("height").get<unsigned int>()};
 }
 
-unsigned int Config::getFramerate() const {
-    return data["window"]["framerate"].get<unsigned int>();
+[[nodiscard]] unsigned int Config::get_framerate() const {
+    return data.at("window").at("framerate").get<unsigned int>();
 }
 
-bool Config::getVerticalSync() const {
-    return data["window"]["verticalSync"].get<bool>();
+[[nodiscard]] bool Config::get_vertical_sync() const {
+    return data.at("window").at("verticalSync").get<bool>();
 }
 
-sf::Vector2f Config::getLogicalSize() const {
-    return {
-        data["render"]["logicalWidth"].get<float>(),
-        data["render"]["logicalHeight"].get<float>()
-    };
+[[nodiscard]] sf::Vector2f Config::get_logical_size() const {
+    return {data.at("render").at("logicalWidth").get<float>(),
+            data.at("render").at("logicalHeight").get<float>()};
 }
 
-const std::string& Config::getFontPath() const {
-    return data["font"]["path"].get_ref<const std::string&>();
+[[nodiscard]] const std::string& Config::get_font_path() const {
+    return data.at("font").at("path").get_ref<const std::string&>();
 }
 
-const std::unordered_map<std::string, std::string>& Config::getTexturePaths() const {
+[[nodiscard]] const std::unordered_map<std::string, std::string>&
+Config::get_texture_paths() const {
     return texturePaths;
 }
 
-const std::vector<std::string>& Config::getCarTypes() const {
+[[nodiscard]] const std::vector<std::string>& Config::get_car_types() const {
     return carTypes;
 }
 
-const std::vector<MapEntry>& Config::getMaps() const {
+[[nodiscard]] const std::vector<MapEntry>& Config::get_maps() const {
     return maps;
 }
 
-int Config::getPlayer1Score() const {
-    return data["scores"]["player1"].get<int>();
+[[nodiscard]] int Config::get_player1_score() const {
+    return data.at("scores").at("player1").get<int>();
 }
 
-int Config::getPlayer2Score() const {
-    return data["scores"]["player2"].get<int>();
+[[nodiscard]] int Config::get_player2_score() const {
+    return data.at("scores").at("player2").get<int>();
 }
 
-void Config::setScores(int player1, int player2) {
-    data["scores"]["player1"] = player1;
-    data["scores"]["player2"] = player2;
+void Config::set_scores(int player1, int player2) {
+    data.at("scores").at("player1") = player1;
+    data.at("scores").at("player2") = player2;
     save();
 }
 
-void Config::resetScores() {
-    setScores(0, 0);
+void Config::reset_scores() {
+    set_scores(0, 0);
 }
 
-const std::string& Config::getDefaultPlayer1Car() const {
-    return data["defaults"]["player1Car"].get_ref<const std::string&>();
+[[nodiscard]] const std::string& Config::get_default_player1_car() const {
+    return data.at("defaults").at("player1Car").get_ref<const std::string&>();
 }
 
-const std::string& Config::getDefaultPlayer2Car() const {
-    return data["defaults"]["player2Car"].get_ref<const std::string&>();
+[[nodiscard]] const std::string& Config::get_default_player2_car() const {
+    return data.at("defaults").at("player2Car").get_ref<const std::string&>();
 }
 
-int Config::getDefaultCurrentMap() const {
-    return data["defaults"]["currentMap"].get<int>();
+[[nodiscard]] int Config::get_default_current_map() const {
+    return data.at("defaults").at("currentMap").get<int>();
 }
 
-const std::unordered_map<std::string, sf::Keyboard::Key>& Config::getSupportedKeys() const {
+[[nodiscard]] const std::unordered_map<std::string, sf::Keyboard::Key>&
+Config::get_supported_keys() const {
     return supportedKeys;
 }
 
-std::unordered_map<std::string, sf::Keyboard::Key> Config::getPlayerControls(const std::string& player) const {
+[[nodiscard]] std::unordered_map<std::string, sf::Keyboard::Key>
+Config::get_player_controls(const std::string& player) const {
     std::unordered_map<std::string, sf::Keyboard::Key> controls;
-    const auto& playerControls = data["controls"][player];
+    const auto& player_controls = data.at("controls").at(player);
 
-    for (auto& [action, keyName] : playerControls.items()) {
+    for (const auto& [action, keyName] : player_controls.items()) {
         const std::string key = keyName.get<std::string>();
         controls[action] = supportedKeys.at(key);
     }
@@ -180,86 +174,82 @@ std::unordered_map<std::string, sf::Keyboard::Key> Config::getPlayerControls(con
     return controls;
 }
 
-const CarPhysics& Config::getCarPhysics() const {
+[[nodiscard]] const CarPhysics& Config::get_car_physics() const {
     return carPhysics;
 }
 
-int Config::getButtonTextSize() const {
-    return data["buttonTextSize"].get<int>();
+[[nodiscard]] int Config::get_button_text_size() const {
+    return data.at("buttonTextSize").get<int>();
 }
 
-ButtonLayout Config::parseButton(const nlohmann::json& button) {
-    return {
-        button["x"].get<float>(),
-        button["y"].get<float>(),
-        button["width"].get<float>(),
-        button["height"].get<float>(),
-        button["text"].get<std::string>()
-    };
+ButtonLayout Config::parse_button(const nlohmann::json& button) {
+    return {.x = button.at("x").get<float>(),
+            .y = button.at("y").get<float>(),
+            .width = button.at("width").get<float>(),
+            .height = button.at("height").get<float>(),
+            .text = button.at("text").get<std::string>()};
 }
 
-SpriteLayout Config::parseSprite(const nlohmann::json& sprite) {
-    return {
-        sprite["x"].get<float>(),
-        sprite["y"].get<float>(),
-        sprite["scale"].get<float>(),
-        sprite["rotation"].get<float>()
-    };
+SpriteLayout Config::parse_sprite(const nlohmann::json& sprite) {
+    return {.x = sprite.at("x").get<float>(),
+            .y = sprite.at("y").get<float>(),
+            .scale = sprite.at("scale").get<float>(),
+            .rotation = sprite.at("rotation").get<float>()};
 }
 
-TextLayout Config::parseText(const nlohmann::json& text, float defaultX) {
+TextLayout Config::parse_text(const nlohmann::json& text, float defaultX) {
     TextLayout layout;
-    layout.text = text.contains("text") ? text["text"].get<std::string>() : "";
-    layout.fontSize = text["fontSize"].get<int>();
-    layout.x = text.contains("x") ? text["x"].get<float>() : defaultX;
-    layout.y = text["y"].get<float>();
+    layout.text = text.contains("text") ? text.at("text").get<std::string>() : "";
+    layout.fontSize = text.at("fontSize").get<int>();
+    layout.x = text.contains("x") ? text.at("x").get<float>() : defaultX;
+    layout.y = text.at("y").get<float>();
     return layout;
 }
 
-ButtonLayout Config::getMenuButton(const std::string& name) const {
-    return parseButton(data["menu"]["buttons"][name]);
+[[nodiscard]] ButtonLayout Config::get_menu_button(const std::string& name) const {
+    return parse_button(data.at("menu").at("buttons").at(name));
 }
 
-ButtonLayout Config::getSettingsButton(const std::string& name) const {
-    return parseButton(data["settings"]["buttons"][name]);
+[[nodiscard]] ButtonLayout Config::get_settings_button(const std::string& name) const {
+    return parse_button(data.at("settings").at("buttons").at(name));
 }
 
-ButtonLayout Config::getWinningButton(const std::string& name) const {
-    return parseButton(data["winning"]["buttons"][name]);
+[[nodiscard]] ButtonLayout Config::get_winning_button(const std::string& name) const {
+    return parse_button(data.at("winning").at("buttons").at(name));
 }
 
-const std::string& Config::getMenuBackground() const {
-    return data["menu"]["background"].get_ref<const std::string&>();
+[[nodiscard]] const std::string& Config::get_menu_background() const {
+    return data.at("menu").at("background").get_ref<const std::string&>();
 }
 
-const std::string& Config::getSettingsBackground() const {
-    return data["settings"]["background"].get_ref<const std::string&>();
+[[nodiscard]] const std::string& Config::get_settings_background() const {
+    return data.at("settings").at("background").get_ref<const std::string&>();
 }
 
-const std::string& Config::getWinningBackground() const {
-    return data["winning"]["background"].get_ref<const std::string&>();
+[[nodiscard]] const std::string& Config::get_winning_background() const {
+    return data.at("winning").at("background").get_ref<const std::string&>();
 }
 
-SpriteLayout Config::getSettingsPlayer1View() const {
-    return parseSprite(data["settings"]["player1View"]);
+[[nodiscard]] SpriteLayout Config::get_settings_player1_view() const {
+    return parse_sprite(data.at("settings").at("player1View"));
 }
 
-SpriteLayout Config::getSettingsPlayer2View() const {
-    return parseSprite(data["settings"]["player2View"]);
+[[nodiscard]] SpriteLayout Config::get_settings_player2_view() const {
+    return parse_sprite(data.at("settings").at("player2View"));
 }
 
-TextLayout Config::getSettingsMapText() const {
-    return parseText(data["settings"]["mapText"]);
+[[nodiscard]] TextLayout Config::get_settings_map_text() const {
+    return parse_text(data.at("settings").at("mapText"));
 }
 
-TextLayout Config::getSettingsMapName() const {
-    return parseText(data["settings"]["mapName"]);
+[[nodiscard]] TextLayout Config::get_settings_map_name() const {
+    return parse_text(data.at("settings").at("mapName"));
 }
 
-TextLayout Config::getWinningText() const {
-    return parseText(data["winning"]["winningText"]);
+[[nodiscard]] TextLayout Config::get_winning_text() const {
+    return parse_text(data.at("winning").at("winningText"));
 }
 
-TextLayout Config::getWinningScoresText() const {
-    return parseText(data["winning"]["scoresText"]);
+[[nodiscard]] TextLayout Config::get_winning_scores_text() const {
+    return parse_text(data.at("winning").at("scoresText"));
 }

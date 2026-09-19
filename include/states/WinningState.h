@@ -1,21 +1,24 @@
-#pragma once
+#ifndef WINNINGSTATE_H
+#define WINNINGSTATE_H
 
-#include "State.h"
 #include "Button.h"
+#include "State.h"
 
-class WinningState :
-    public State
-{
-public:
-    WinningState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
-        sf::Keyboard::Key> supportedKeys, char winner);
-    virtual ~WinningState() = default;
+class WinningState : public State {
+  public:
+    WinningState(sf::RenderWindow* window,
+                 std::unordered_map<std::string, sf::Keyboard::Key> supportedKeys, char winner);
+    ~WinningState() override = default;
+    WinningState(const WinningState&) = delete;
+    WinningState& operator=(const WinningState&) = delete;
+    WinningState(WinningState&&) noexcept = default;
+    WinningState& operator=(WinningState&&) = delete;
 
-    void updateButtons();
-    void update(const float& dt);
-    void render(sf::RenderTarget& target);
+    void update_buttons();
+    void update(const float& /*dt*/) override;
+    void render(sf::RenderTarget& target) override;
 
-private:
+  private:
     Button mainMenu;
     Button playAgain;
 
@@ -24,6 +27,7 @@ private:
     sf::Text winningText;
     sf::Text scoresText;
 
-    void initScores(char winner);
+    void init_scores(char winner);
 };
 
+#endif // WINNINGSTATE_H

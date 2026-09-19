@@ -362,3 +362,4 @@ build/
 cmake-build-*/
 CMakeUserPresets.json
 cmake/
+compile_commands.json

@@ -1,65 +1,61 @@
 #include "MenuState.h"
-#include "SettingState.h"
+
 #include "Config.h"
+#include "GameState.h"
+#include "SettingState.h"
+#include "State.h"
 
-MenuState::MenuState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
-                        sf::Keyboard::Key> supportedKeys)
-    : State(window, supportedKeys),
-        gamestate(
-            Config::instance().getMenuButton("start").x,
-            Config::instance().getMenuButton("start").y,
-            Config::instance().getMenuButton("start").width,
-            Config::instance().getMenuButton("start").height,
-            Config::instance().getMenuButton("start").text,
-            textures["baseButton"], textures["baseButtonClicked"], font),
-        settings(
-            Config::instance().getMenuButton("settings").x,
-            Config::instance().getMenuButton("settings").y,
-            Config::instance().getMenuButton("settings").width,
-            Config::instance().getMenuButton("settings").height,
-            Config::instance().getMenuButton("settings").text,
-            textures["baseButton"], textures["baseButtonClicked"], font),
-        exit(
-            Config::instance().getMenuButton("exit").x,
-            Config::instance().getMenuButton("exit").y,
-            Config::instance().getMenuButton("exit").width,
-            Config::instance().getMenuButton("exit").height,
-            Config::instance().getMenuButton("exit").text,
-            textures["baseButton"], textures["baseButtonClicked"], font),
-	    background(textures[Config::instance().getMenuBackground()])
-{
-}
+MenuState::MenuState(sf::RenderWindow* window,
+                     std::unordered_map<std::string, sf::Keyboard::Key> supportedKeys)
+    : State(window, std::move(supportedKeys)),
+      gamestate(Config::instance().get_menu_button("start").x,
+                Config::instance().get_menu_button("start").y,
+                Config::instance().get_menu_button("start").width,
+                Config::instance().get_menu_button("start").height,
+                Config::instance().get_menu_button("start").text,
+                &State::get_textures().at("baseButton"),
+                &State::get_textures().at("baseButtonClicked"), State::get_font()),
+      settings(Config::instance().get_menu_button("settings").x,
+               Config::instance().get_menu_button("settings").y,
+               Config::instance().get_menu_button("settings").width,
+               Config::instance().get_menu_button("settings").height,
+               Config::instance().get_menu_button("settings").text,
+               &State::get_textures().at("baseButton"),
+               &State::get_textures().at("baseButtonClicked"), State::get_font()),
+      exit(Config::instance().get_menu_button("exit").x,
+           Config::instance().get_menu_button("exit").y,
+           Config::instance().get_menu_button("exit").width,
+           Config::instance().get_menu_button("exit").height,
+           Config::instance().get_menu_button("exit").text, &State::get_textures().at("baseButton"),
+           &State::get_textures().at("baseButtonClicked"), State::get_font()),
+      background(State::get_textures().at(Config::instance().get_menu_background())) {}
 
-void MenuState::updateButtons()
-{
-    if(this->exit.isPressed() || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
-    {
-        this->endState();
+void MenuState::update_buttons() {
+    if (this->exit.is_pressed() || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
+        this->end_state();
     }
 
-    if(this->gamestate.isPressed())
-    {
-        this->nextState = std::make_unique<GameState>(this->window, supportedKeys);
+    if (this->gamestate.is_pressed()) {
+        State::set_next_state(
+            std::make_unique<GameState>(&State::get_window(), State::get_supported_keys()));
     }
 
-    if(this->settings.isPressed())
-    {
-        this->nextState = std::make_unique<SettingState>(this->window, supportedKeys);
+    if (this->settings.is_pressed()) {
+        State::set_next_state(
+            std::make_unique<SettingState>(&State::get_window(), State::get_supported_keys()));
     }
 }
 
-void MenuState::update(const float& dt)
-{
-    updateMousePos();
-    this->gamestate.update(this->mousePosView);
-    this->exit.update(this->mousePosView);
-    this->settings.update(this->mousePosView);
-    updateButtons();
+void MenuState::update(const float& /*dt*/) {
+    update_mouse_pos();
+    this->gamestate.update(State::get_mouse_pos_view());
+    this->exit.update(State::get_mouse_pos_view());
+    this->settings.update(State::get_mouse_pos_view());
+    update_buttons();
 }
 
-void MenuState::render(sf::RenderTarget& target)
-{
-    this->window->draw(this->background, sf::RenderStates::Default);
+void MenuState::render(sf::RenderTarget& target) {
+    State::get_window().draw(this->background, sf::RenderStates::Default);
 
     this->gamestate.render(target);
     this->exit.render(target);

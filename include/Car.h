@@ -1,41 +1,31 @@
-#pragma once
-#define _USE_MATH_DEFINES
+#ifndef CAR_H
+#define CAR_H
 
 #include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <algorithm>
-#include <cmath>
-#include <iostream>
-#include <fstream>
-#include <ctime>
-#include <cstdlib>
-#include <vector>
-#include <stack>
-#include <map>
+#include <SFML/Window.hpp>
 #include <memory>
 #include <string>
+#include <vector>
 
 class Car {
-public:
-    Car(std::unordered_map<std::string,sf::Keyboard::Key> keys, sf::Texture& texture);
+  public:
+    Car(std::unordered_map<std::string, sf::Keyboard::Key> keys, sf::Texture& texture);
     virtual ~Car() = default;
+    Car(const Car&) = delete;
+    Car& operator=(const Car&) = delete;
+    Car(Car&&) noexcept = default;
+    Car& operator=(Car&&) = delete;
 
-    void setPosition(sf::Vector2f position, float angle);
-    void handleCollision(Car& other);
-    void handleWallCollision(const std::vector<sf::Vector2f>& wallVertices);
-    bool checkWinning(const std::vector<sf::Vector2f>& finishLine);
+    void set_position(sf::Vector2f position, float angle);
+    void handle_collision(Car& other);
+    void handle_wall_collision(const std::vector<sf::Vector2f>& wallVertices);
+    bool check_winning(const std::vector<sf::Vector2f>& finishLine);
     void update(const float& dt);
     void render(sf::RenderTarget& target);
 
-private:
+  private:
     std::unique_ptr<sf::Sprite> car;
-    sf::Vector2f rotateVector(const sf::Vector2f& vec, float angle_deg) {
-        float angle_rad = angle_deg * static_cast<float>(M_PI) / 180.f;
-        float cos_a = std::cos(angle_rad);
-        float sin_a = std::sin(angle_rad);
-        return sf::Vector2f(vec.x * cos_a - vec.y * sin_a, vec.x * sin_a + vec.y * cos_a);
-    }
 
     sf::Vector2f position;
     float speed;
@@ -53,7 +43,8 @@ private:
 
     void ride(const float& dt);
     void veer(const float& dt);
-    float dotProduct(const sf::Vector2f& a, const sf::Vector2f& b);
-	sf::Vector2f normalizeVector(const sf::Vector2f& v);
+    static float dot_product(const sf::Vector2f& a, const sf::Vector2f& b);
+    static sf::Vector2f normalize_vector(const sf::Vector2f& v);
 };
 
+#endif // CAR_H

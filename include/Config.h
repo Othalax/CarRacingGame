@@ -1,8 +1,9 @@
-#pragma once
+#ifndef CONFIG_H
+#define CONFIG_H
 
-#include <nlohmann/json.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -52,64 +53,66 @@ struct CarPhysics {
 };
 
 class Config {
-public:
+  public:
     static Config& instance();
 
-    const std::string& getWindowTitle() const;
-    sf::Vector2u getWindowSize() const;
-    unsigned int getFramerate() const;
-    bool getVerticalSync() const;
+    [[nodiscard]] const std::string& get_window_title() const;
+    [[nodiscard]] sf::Vector2u get_window_size() const;
+    [[nodiscard]] unsigned int get_framerate() const;
+    [[nodiscard]] bool get_vertical_sync() const;
 
-    sf::Vector2f getLogicalSize() const;
-    const std::string& getFontPath() const;
+    [[nodiscard]] sf::Vector2f get_logical_size() const;
+    [[nodiscard]] const std::string& get_font_path() const;
 
-    const std::unordered_map<std::string, std::string>& getTexturePaths() const;
-    const std::vector<std::string>& getCarTypes() const;
-    const std::vector<MapEntry>& getMaps() const;
+    [[nodiscard]] const std::unordered_map<std::string, std::string>& get_texture_paths() const;
+    [[nodiscard]] const std::vector<std::string>& get_car_types() const;
+    [[nodiscard]] const std::vector<MapEntry>& get_maps() const;
 
-    int getPlayer1Score() const;
-    int getPlayer2Score() const;
-    void setScores(int player1, int player2);
-    void resetScores();
+    [[nodiscard]] int get_player1_score() const;
+    [[nodiscard]] int get_player2_score() const;
+    void set_scores(int player1, int player2);
+    void reset_scores();
     void save();
 
-    const std::string& getDefaultPlayer1Car() const;
-    const std::string& getDefaultPlayer2Car() const;
-    int getDefaultCurrentMap() const;
+    [[nodiscard]] const std::string& get_default_player1_car() const;
+    [[nodiscard]] const std::string& get_default_player2_car() const;
+    [[nodiscard]] int get_default_current_map() const;
 
-    const std::unordered_map<std::string, sf::Keyboard::Key>& getSupportedKeys() const;
-    std::unordered_map<std::string, sf::Keyboard::Key> getPlayerControls(const std::string& player) const;
+    [[nodiscard]] const std::unordered_map<std::string, sf::Keyboard::Key>&
+    get_supported_keys() const;
+    [[nodiscard]] std::unordered_map<std::string, sf::Keyboard::Key>
+    get_player_controls(const std::string& player) const;
 
-    const CarPhysics& getCarPhysics() const;
-    int getButtonTextSize() const;
+    [[nodiscard]] const CarPhysics& get_car_physics() const;
+    [[nodiscard]] int get_button_text_size() const;
 
-    ButtonLayout getMenuButton(const std::string& name) const;
-    ButtonLayout getSettingsButton(const std::string& name) const;
-    ButtonLayout getWinningButton(const std::string& name) const;
+    [[nodiscard]] ButtonLayout get_menu_button(const std::string& name) const;
+    [[nodiscard]] ButtonLayout get_settings_button(const std::string& name) const;
+    [[nodiscard]] ButtonLayout get_winning_button(const std::string& name) const;
 
-    const std::string& getMenuBackground() const;
-    const std::string& getSettingsBackground() const;
-    const std::string& getWinningBackground() const;
+    [[nodiscard]] const std::string& get_menu_background() const;
+    [[nodiscard]] const std::string& get_settings_background() const;
+    [[nodiscard]] const std::string& get_winning_background() const;
 
-    SpriteLayout getSettingsPlayer1View() const;
-    SpriteLayout getSettingsPlayer2View() const;
-    TextLayout getSettingsMapText() const;
-    TextLayout getSettingsMapName() const;
-    TextLayout getWinningText() const;
-    TextLayout getWinningScoresText() const;
+    [[nodiscard]] SpriteLayout get_settings_player1_view() const;
+    [[nodiscard]] SpriteLayout get_settings_player2_view() const;
+    [[nodiscard]] TextLayout get_settings_map_text() const;
+    [[nodiscard]] TextLayout get_settings_map_name() const;
+    [[nodiscard]] TextLayout get_winning_text() const;
+    [[nodiscard]] TextLayout get_winning_scores_text() const;
 
-private:
+  private:
     Config();
     void load();
-    void parseSupportedKeys();
-    void parseMaps();
-    void parseCarTypes();
-    void parseTexturePaths();
-    void parseCarPhysics();
+    void parse_supported_keys();
+    void parse_maps();
+    void parse_car_types();
+    void parse_texture_paths();
+    void parse_car_physics();
 
-    static ButtonLayout parseButton(const nlohmann::json& button);
-    static SpriteLayout parseSprite(const nlohmann::json& sprite);
-    static TextLayout parseText(const nlohmann::json& text, float defaultX = -1.f);
+    static ButtonLayout parse_button(const nlohmann::json& button);
+    static SpriteLayout parse_sprite(const nlohmann::json& sprite);
+    static TextLayout parse_text(const nlohmann::json& text, float defaultX = -1.F);
 
     nlohmann::json data;
 
@@ -119,3 +122,5 @@ private:
     std::unordered_map<std::string, sf::Keyboard::Key> supportedKeys;
     CarPhysics carPhysics;
 };
+
+#endif // CONFIG_H

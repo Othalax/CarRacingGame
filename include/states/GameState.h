@@ -1,23 +1,28 @@
-#pragma once
+#ifndef GAMESTATE_H
+#define GAMESTATE_H
 
-#include "State.h"
+#include "Car.h"
 #include "Map.h"
+#include "State.h"
 
+class GameState : public State {
+  public:
+    GameState(sf::RenderWindow* window,
+              std::unordered_map<std::string, sf::Keyboard::Key> supportedKeys);
+    ~GameState() override = default;
+    GameState(const GameState&) = delete;
+    GameState& operator=(const GameState&) = delete;
+    GameState(GameState&&) = delete;
+    GameState& operator=(GameState&&) = delete;
 
-class GameState : public State
-{
-    public:
-        GameState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
-                    sf::Keyboard::Key> supportedKeys);
-        virtual ~GameState() = default;
+    void update(const float& dt) override;
+    void render(sf::RenderTarget& /*target*/) override;
 
-        void update(const float& dt);
-        void render(sf::RenderTarget& target);
+  private:
+    Car player1;
+    Car player2;
 
-    private:
-        Car player1;
-        Car player2;
-
-        Map track;
+    Map track;
 };
 
+#endif // GAMESTATE_H

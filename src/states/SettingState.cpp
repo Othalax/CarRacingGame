@@ -1,161 +1,158 @@
 #include "SettingState.h"
-#include "MenuState.h"
+
 #include "Config.h"
+#include "MenuState.h"
+#include "State.h"
 
-SettingState::SettingState(std::unique_ptr<sf::RenderWindow>& window, std::unordered_map<std::string,
-                            sf::Keyboard::Key> supportedKeys)
-    : State(window, supportedKeys),
-	player1view(textures[State::player1car]), 
-    player2view(textures[State::player2car]),
-	background(textures[Config::instance().getSettingsBackground()]),
-    mapText(font, Config::instance().getSettingsMapText().text, Config::instance().getSettingsMapText().fontSize),
-	mapName(font, State::maps[State::currentMap].name, Config::instance().getSettingsMapName().fontSize)
-{
-    this->initButtons();
+#include <algorithm>
+#include <utility>
 
-    this->carTypes = Config::instance().getCarTypes();
+SettingState::SettingState(sf::RenderWindow* window,
+                           std::unordered_map<std::string, sf::Keyboard::Key> supportedKeys)
+    : State(window, std::move(supportedKeys)), carTypes(Config::instance().get_car_types()),
+      player1view(State::get_textures().at(State::player1car)),
+      player2view(State::get_textures().at(State::player2car)),
+      background(State::get_textures().at(Config::instance().get_settings_background())),
+      mapText(State::get_font(), Config::instance().get_settings_map_text().text,
+              Config::instance().get_settings_map_text().fontSize),
+      mapName(State::get_font(), State::maps.at(State::current_map).name,
+              Config::instance().get_settings_map_name().fontSize) {
 
-    const auto player1Layout = Config::instance().getSettingsPlayer1View();
-    const auto player2Layout = Config::instance().getSettingsPlayer2View();
-    const auto mapTextLayout = Config::instance().getSettingsMapText();
-    const auto mapNameLayout = Config::instance().getSettingsMapName();
-    const float logicalWidth = Config::instance().getLogicalSize().x;
+    this->init_buttons();
 
-    this->player1view.setPosition(sf::Vector2f(player1Layout.x, player1Layout.y));
-	this->player1view.setScale(sf::Vector2f(player1Layout.scale, player1Layout.scale));
-	this->player1view.rotate(sf::degrees(player1Layout.rotation));
-    this->player2view.setPosition(sf::Vector2f(player2Layout.x, player2Layout.y));
-	this->player2view.setScale(sf::Vector2f(player2Layout.scale, player2Layout.scale));
-	this->player2view.rotate(sf::degrees(player2Layout.rotation));
+    const auto player1_layout = Config::instance().get_settings_player1_view();
+    const auto player2_layout = Config::instance().get_settings_player2_view();
+    const auto map_text_layout = Config::instance().get_settings_map_text();
+    const auto map_name_layout = Config::instance().get_settings_map_name();
+    const float logical_width = Config::instance().get_logical_size().x;
 
-    this->mapText.setPosition(sf::Vector2f((logicalWidth - this->mapText.getLocalBounds().size.x) / 2.f, mapTextLayout.y));
-	this->mapName.setPosition(sf::Vector2f((logicalWidth - this->mapName.getLocalBounds().size.x) / 2.f, mapNameLayout.y));
+    this->player1view.setPosition(sf::Vector2f(player1_layout.x, player1_layout.y));
+    this->player1view.setScale(sf::Vector2f(player1_layout.scale, player1_layout.scale));
+    this->player1view.rotate(sf::degrees(player1_layout.rotation));
+    this->player2view.setPosition(sf::Vector2f(player2_layout.x, player2_layout.y));
+    this->player2view.setScale(sf::Vector2f(player2_layout.scale, player2_layout.scale));
+    this->player2view.rotate(sf::degrees(player2_layout.rotation));
+
+    this->mapText.setPosition(sf::Vector2f(
+        (logical_width - this->mapText.getLocalBounds().size.x) / 2.F, map_text_layout.y));
+    this->mapName.setPosition(sf::Vector2f(
+        (logical_width - this->mapName.getLocalBounds().size.x) / 2.F, map_name_layout.y));
 }
 
-void SettingState::initButtons()
-{
+void SettingState::init_buttons() {
     const auto& config = Config::instance();
 
-    auto addButton = [this, &config](const std::string& name,
-        const std::string& defaultTexture, const std::string& hoverTexture) {
-        const auto layout = config.getSettingsButton(name);
-        this->buttons.try_emplace(
-            name,
-            layout.x, layout.y, layout.width, layout.height, layout.text,
-            textures[defaultTexture], textures[hoverTexture], font
-        );
+    auto add_button = [this, &config](const std::string& name, const std::string& defaultTexture,
+                                      const std::string& hoverTexture) {
+        const auto layout = config.get_settings_button(name);
+        this->buttons.try_emplace(name, layout.x, layout.y, layout.width, layout.height,
+                                  layout.text, &State::get_textures().at(defaultTexture),
+                                  &State::get_textures().at(hoverTexture), State::get_font());
     };
 
-    addButton("menu", "baseButton", "baseButtonClicked");
-    addButton("player1arrowright", "arrowButtonRight", "arrowButtonRightClicked");
-    addButton("player1arrowleft", "arrowButtonLeft", "arrowButtonLeftClicked");
-    addButton("player2arrowright", "arrowButtonRight", "arrowButtonRightClicked");
-    addButton("player2arrowleft", "arrowButtonLeft", "arrowButtonLeftClicked");
-    addButton("resetScore", "baseButton", "baseButtonClicked");
-    addButton("maparrowright", "arrowButtonRight", "arrowButtonRightClicked");
-    addButton("maparrowleft", "arrowButtonLeft", "arrowButtonLeftClicked");
+    add_button("menu", "baseButton", "baseButtonClicked");
+    add_button("player1arrowright", "arrowButtonRight", "arrowButtonRightClicked");
+    add_button("player1arrowleft", "arrowButtonLeft", "arrowButtonLeftClicked");
+    add_button("player2arrowright", "arrowButtonRight", "arrowButtonRightClicked");
+    add_button("player2arrowleft", "arrowButtonLeft", "arrowButtonLeftClicked");
+    add_button("resetScore", "baseButton", "baseButtonClicked");
+    add_button("maparrowright", "arrowButtonRight", "arrowButtonRightClicked");
+    add_button("maparrowleft", "arrowButtonLeft", "arrowButtonLeftClicked");
 }
 
-void SettingState::updateButtons() {
+void SettingState::change_car(std::string& currentCar, sf::Sprite& view, int direction,
+                              const std::string& other) {
+    auto it = std::ranges::find(this->carTypes, currentCar);
+    auto it_other = std::ranges::find(this->carTypes, other);
 
-    auto changeCar = [this](std::string& currentCar, sf::Sprite& view, int direction, std::string& other) {
-        auto it = std::find(this->carTypes.begin(), this->carTypes.end(), currentCar);
-        auto itOther = std::find(this->carTypes.begin(), this->carTypes.end(), other);
-        if (it != this->carTypes.end()) {
-            int currentIndex = static_cast<int>(std::distance(this->carTypes.begin(), it));
-            int currentIndexOther = static_cast<int>(std::distance(this->carTypes.begin(), itOther));
-            int newIndex = currentIndex + direction;
-            if (newIndex == currentIndexOther) {
-                newIndex += direction;
+    if (it != this->carTypes.end()) {
+        const int current_index = static_cast<int>(std::distance(this->carTypes.begin(), it));
+        const int current_index_other =
+            static_cast<int>(std::distance(this->carTypes.begin(), it_other));
+
+        int new_index = current_index + direction;
+
+        if (new_index == current_index_other) {
+            new_index += direction;
+        }
+
+        if (new_index >= 0 && std::cmp_less(new_index, this->carTypes.size())) {
+            currentCar = this->carTypes.at(new_index);
+        } else if (new_index < 0) {
+            currentCar = this->carTypes.back();
+            if (currentCar == other) {
+                currentCar = this->carTypes.at(this->carTypes.size() - 2);
             }
-
-            if (newIndex >= 0 && newIndex < static_cast<int>(this->carTypes.size())) {
-                currentCar = this->carTypes[newIndex];
+        } else if (std::cmp_greater_equal(new_index, this->carTypes.size())) {
+            currentCar = this->carTypes.front();
+            if (currentCar == other) {
+                currentCar = this->carTypes.at(1);
             }
-            else if (newIndex < 0) {
-                currentCar = this->carTypes.back();
-                if (currentCar == other) {
-                    currentCar = this->carTypes[this->carTypes.size() - 2];
-				}
-            }
-            else if (newIndex >= static_cast<int>(this->carTypes.size())) {
-                currentCar = this->carTypes.front();
-                if (currentCar == other) {
-                    currentCar = this->carTypes[1];
-                }
-			}
-            view.setTexture(this->textures[currentCar]);
         }
-    };
+        view.setTexture(State::get_textures().at(currentCar));
+    }
+}
 
-    auto changeMap = [this](int direction) {
-        int newIndex = State::currentMap + direction;
-            
-        if (newIndex >= 0 && newIndex < static_cast<int>(this->maps.size())) {
-            State::currentMap = newIndex;
-        }
-        else if (newIndex < 0) {
-            State::currentMap = State::maps.size()-1;
-        }
-        else if (newIndex >= static_cast<int>(this->maps.size())) {
-            State::currentMap = 0;
-        }
-		this->mapName.setString(State::maps[State::currentMap].name);
-        this->mapName.setPosition(sf::Vector2f(
-            (Config::instance().getLogicalSize().x - this->mapName.getLocalBounds().size.x) / 2.f,
-            Config::instance().getSettingsMapName().y));
-    };
+void SettingState::change_map(int direction) {
+    const int new_index = State::current_map + direction;
 
-    if (this->buttons.at("menu").isPressed()) {
-        this->nextState = std::make_unique<MenuState>(this->window, this->supportedKeys);
+    if (new_index >= 0 && std::cmp_less(new_index, State::maps.size())) {
+        State::current_map = new_index;
+    } else if (new_index < 0) {
+
+        State::current_map = static_cast<int>(State::maps.size()) - 1;
+    } else if (std::cmp_greater_equal(new_index, State::maps.size())) {
+        State::current_map = 0;
+    }
+
+    this->mapName.setString(State::maps.at(State::current_map).name);
+    this->mapName.setPosition(sf::Vector2f(
+        (Config::instance().get_logical_size().x - this->mapName.getLocalBounds().size.x) / 2.F,
+        Config::instance().get_settings_map_name().y));
+}
+
+void SettingState::update_buttons() {
+    if (this->buttons.at("menu").is_pressed()) {
+        State::set_next_state(
+            std::make_unique<MenuState>(&State::get_window(), State::get_supported_keys()));
         return;
     }
-    else if (this->buttons.at("resetScore").isPressed()) {
-        Config::instance().resetScores();
-    }
-    else if (this->buttons.at("player1arrowright").isPressed()) {
-        changeCar(State::player1car, this->player1view, 1, State::player2car);
-    }
-    else if (this->buttons.at("player1arrowleft").isPressed()) {
-        changeCar(State::player1car, this->player1view, -1, State::player2car);
-    }
 
-    else if (this->buttons.at("player2arrowright").isPressed()) {
-        changeCar(State::player2car, this->player2view, 1, State::player1car);
-    }
-    else if (this->buttons.at("player2arrowleft").isPressed()) {
-        changeCar(State::player2car, this->player2view, -1, State::player1car);
-    }
-    else if (this->buttons.at("maparrowright").isPressed()) {
-        changeMap(1);
-    }
-    else if (this->buttons.at("maparrowleft").isPressed()) {
-        changeMap(-1);
+    if (this->buttons.at("resetScore").is_pressed()) {
+        Config::instance().reset_scores();
+    } else if (this->buttons.at("player1arrowright").is_pressed()) {
+        change_car(State::player1car, this->player1view, 1, State::player2car);
+    } else if (this->buttons.at("player1arrowleft").is_pressed()) {
+        change_car(State::player1car, this->player1view, -1, State::player2car);
+    } else if (this->buttons.at("player2arrowright").is_pressed()) {
+        change_car(State::player2car, this->player2view, 1, State::player1car);
+    } else if (this->buttons.at("player2arrowleft").is_pressed()) {
+        change_car(State::player2car, this->player2view, -1, State::player1car);
+    } else if (this->buttons.at("maparrowright").is_pressed()) {
+        change_map(1);
+    } else if (this->buttons.at("maparrowleft").is_pressed()) {
+        change_map(-1);
     }
 }
 
-void SettingState::update(const float& dt)
-{
-    updateMousePos();
-    for(auto &itr : this->buttons)
-    {
-        itr.second.update(mousePosView);
+void SettingState::update(const float& /*dt*/) {
+    update_mouse_pos();
+    for (auto& itr : this->buttons) {
+        itr.second.update(State::get_mouse_pos_view());
     }
-    updateButtons();
+    update_buttons();
 }
 
-void SettingState::render(sf::RenderTarget& target)
-{
-	target.draw(this->background, sf::RenderStates::Default);
+void SettingState::render(sf::RenderTarget& target) {
+    target.draw(this->background, sf::RenderStates::Default);
 
-    for(auto &itr : this->buttons)
-    {
+    for (auto& itr : this->buttons) {
         itr.second.render(target);
     }
 
     target.draw(this->player1view);
     target.draw(this->player2view);
 
-	target.draw(this->mapText);
-	target.draw(this->mapName);
+    target.draw(this->mapText);
+    target.draw(this->mapName);
 }
