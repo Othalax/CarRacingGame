@@ -17,7 +17,10 @@ void Game::init_window() {
                                                       config.get_window_title());
     this->window->setFramerateLimit(config.get_framerate());
     this->window->setVerticalSyncEnabled(config.get_vertical_sync());
-    this->view = this->window->getDefaultView();
+
+    const auto logical_size = Config::instance().get_logical_size();
+    this->view = sf::View(sf::FloatRect({0.F, 0.F}, logical_size));
+    this->window->setView(this->view);
 }
 
 void Game::init_keybinds() {
@@ -80,10 +83,7 @@ void Game::update() {
 }
 
 void Game::render() {
-    const auto logical_size = Config::instance().get_logical_size();
-    const sf::View view(sf::FloatRect({0.F, 0.F}, logical_size));
-
-    this->window->setView(view);
+    this->window->setView(this->view);
     this->window->clear();
 
     if (this->currentState != nullptr) {
